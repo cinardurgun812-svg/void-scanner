@@ -92,7 +92,7 @@ if (users.length === 0) {
         {
             id: 1,
             name: 'Admin User',
-            email: 'admin@baba.com',
+            email: 'admin@revers8.com',
             password: 'admin123',
             role: 'admin',
             createdAt: new Date().toISOString()
