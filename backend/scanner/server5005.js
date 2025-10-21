@@ -60,27 +60,79 @@ function loadEnterprises() {
 // Veri kaydetme fonksiyonları
 function saveUsers(usersData) {
     try {
+        // VERİ KORUMA - Backup oluştur
+        const backupFile = USERS_FILE + '.backup';
+        if (fs.existsSync(USERS_FILE)) {
+            fs.copyFileSync(USERS_FILE, backupFile);
+        }
+        
         fs.writeFileSync(USERS_FILE, JSON.stringify(usersData, null, 2));
-        console.log('✅ Users dosyası başarıyla kaydedildi');
+        console.log(`✅ Users dosyası başarıyla kaydedildi (${usersData.length} kullanıcı)`);
     } catch (error) {
         console.error('❌ Users dosyası kaydedilirken hata:', error);
+        
+        // Hata durumunda backup'tan geri yükle
+        const backupFile = USERS_FILE + '.backup';
+        if (fs.existsSync(backupFile)) {
+            try {
+                fs.copyFileSync(backupFile, USERS_FILE);
+                console.log('🔄 Backup\'tan geri yüklendi');
+            } catch (restoreError) {
+                console.error('❌ Backup geri yüklenirken hata:', restoreError);
+            }
+        }
     }
 }
 
 function savePins() {
     try {
+        // VERİ KORUMA - Backup oluştur
+        const backupFile = PINS_FILE + '.backup';
+        if (fs.existsSync(PINS_FILE)) {
+            fs.copyFileSync(PINS_FILE, backupFile);
+        }
+        
         fs.writeFileSync(PINS_FILE, JSON.stringify(pins, null, 2));
+        console.log(`✅ Pins dosyası başarıyla kaydedildi (${pins.length} PIN)`);
     } catch (error) {
-        console.error('Pins dosyası kaydedilirken hata:', error);
+        console.error('❌ Pins dosyası kaydedilirken hata:', error);
+        
+        // Hata durumunda backup'tan geri yükle
+        const backupFile = PINS_FILE + '.backup';
+        if (fs.existsSync(backupFile)) {
+            try {
+                fs.copyFileSync(backupFile, PINS_FILE);
+                console.log('🔄 PIN Backup\'tan geri yüklendi');
+            } catch (restoreError) {
+                console.error('❌ PIN Backup geri yüklenirken hata:', restoreError);
+            }
+        }
     }
 }
 
 function saveEnterprises(enterprisesData) {
     try {
+        // VERİ KORUMA - Backup oluştur
+        const backupFile = ENTERPRISES_FILE + '.backup';
+        if (fs.existsSync(ENTERPRISES_FILE)) {
+            fs.copyFileSync(ENTERPRISES_FILE, backupFile);
+        }
+        
         fs.writeFileSync(ENTERPRISES_FILE, JSON.stringify(enterprisesData, null, 2));
-        console.log('✅ Enterprises dosyası başarıyla kaydedildi');
+        console.log(`✅ Enterprises dosyası başarıyla kaydedildi (${enterprisesData.length} enterprise)`);
     } catch (error) {
         console.error('❌ Enterprises dosyası kaydedilirken hata:', error);
+        
+        // Hata durumunda backup'tan geri yükle
+        const backupFile = ENTERPRISES_FILE + '.backup';
+        if (fs.existsSync(backupFile)) {
+            try {
+                fs.copyFileSync(backupFile, ENTERPRISES_FILE);
+                console.log('🔄 Enterprise Backup\'tan geri yüklendi');
+            } catch (restoreError) {
+                console.error('❌ Enterprise Backup geri yüklenirken hata:', restoreError);
+            }
+        }
     }
 }
 
@@ -116,12 +168,74 @@ if (users.length === 0) {
         adminUser.isBanned = false;
         adminUser.unbannedAt = null;
         adminUser.unbannedBy = null;
-        saveUsers(users);
     }
+    
+    // TÜM KULLANICILARI KORU - Hiçbirini silme
+    console.log(`✅ ${users.length} kullanıcı korundu`);
+    
+    // Her kullanıcı için güvenlik kontrolü
+    users.forEach(user => {
+        if (!user.isBanned) {
+            user.isBanned = false;
+        }
+        if (!user.unbannedAt) {
+            user.unbannedAt = null;
+        }
+        if (!user.unbannedBy) {
+            user.unbannedBy = null;
+        }
+    });
+    
+    saveUsers(users);
 }
 
 // Enterprise'ları saklamak için in-memory store
 let enterprises = loadEnterprises();
+if (enterprises.length === 0) {
+    console.log('🏢 Enterprise dosyası boş, yeni enterprise'lar oluşturulacak');
+} else {
+    // TÜM ENTERPRISE'LARI KORU - Hiçbirini silme
+    console.log(`✅ ${enterprises.length} enterprise korundu`);
+    
+    // Her enterprise için güvenlik kontrolü
+    enterprises.forEach(enterprise => {
+        if (!enterprise.isActive) {
+            enterprise.isActive = true;
+        }
+        if (!enterprise.createdAt) {
+            enterprise.createdAt = new Date().toISOString();
+        }
+        if (!enterprise.users) {
+            enterprise.users = [];
+        }
+    });
+    
+    saveEnterprises(enterprises);
+}
+
+// PIN'leri saklamak için global array
+let pins = loadPins();
+if (pins.length === 0) {
+    console.log('📌 PIN dosyası boş, yeni PIN'ler oluşturulacak');
+} else {
+    // TÜM PIN'LERİ KORU - Hiçbirini silme
+    console.log(`✅ ${pins.length} PIN korundu`);
+    
+    // Her PIN için güvenlik kontrolü
+    pins.forEach(pin => {
+        if (!pin.isActive) {
+            pin.isActive = true;
+        }
+        if (!pin.createdAt) {
+            pin.createdAt = new Date().toISOString();
+        }
+        if (!pin.scanResults) {
+            pin.scanResults = [];
+        }
+    });
+    
+    savePins();
+}
 
 // CORS ayarları - Production için spesifik origin'ler
 app.use(cors({
