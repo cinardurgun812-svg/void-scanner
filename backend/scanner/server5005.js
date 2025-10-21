@@ -483,9 +483,13 @@ app.post('/api/scan-results', (req, res) => {
 
 // Token'dan email çıkarma fonksiyonu
 function getUserEmailFromToken(token) {
+    // GÜNCEL VERİYİ DOSYADAN YÜKLE
+    const currentUsers = loadUsers();
+    
     // Token'ı users array'inde ara
-    const user = users.find(u => u.token === token);
+    const user = currentUsers.find(u => u.token === token);
     if (user) {
+        console.log('✅ Token bulundu:', user.email);
         return user.email;
     }
     
