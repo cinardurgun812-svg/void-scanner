@@ -104,8 +104,20 @@ if (users.length === 0) {
 // Enterprise'ları saklamak için in-memory store
 let enterprises = loadEnterprises();
 
-// Middleware
-app.use(cors());
+// CORS ayarları - Production için spesifik origin'ler
+app.use(cors({
+    origin: [
+        'https://voidac.xyz',
+        'https://www.voidac.xyz',
+        'https://app.voidac.xyz',
+        'https://admin.voidac.xyz',
+        'http://localhost:3000',
+        'http://localhost:3001'
+    ],
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+}));
 app.use(bodyParser.json({ limit: '50mb' })); // Screenshot için limit artırıldı
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 app.use(express.static('.')); // Mevcut dizini static olarak serve et
