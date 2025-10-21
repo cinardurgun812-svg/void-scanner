@@ -1,7 +1,11 @@
 [build]
   publish = "build"
-  command = "npm run build"
+  command = "CI=false GENERATE_SOURCEMAP=false npm run build"
   base = "frontend"
+
+[build.environment]
+  CI = "false"
+  GENERATE_SOURCEMAP = "false"
 
 [[redirects]]
   from = "/*"

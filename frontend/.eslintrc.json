@@ -1,0 +1,18 @@
+{
+  "extends": [
+    "react-app",
+    "react-app/jest"
+  ],
+  "rules": {
+    "no-unused-vars": "warn",
+    "no-dupe-keys": "warn",
+    "react/jsx-no-duplicate-props": "warn",
+    "react-hooks/exhaustive-deps": "warn",
+    "no-useless-escape": "warn"
+  },
+  "env": {
+    "browser": true,
+    "es6": true,
+    "node": true
+  }
+}
