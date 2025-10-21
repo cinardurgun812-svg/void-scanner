@@ -502,7 +502,6 @@ function getUserEmailFromToken(token) {
 }
 
 // PIN'leri saklamak için global array
-let pins = loadPins();
 // Varsayılan PIN'leri oluşturma - artık sadece dosyadan yükle
 
 // PIN listesi endpoint
