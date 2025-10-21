@@ -57,14 +57,70 @@ function loadEnterprises() {
     return [];
 }
 
-// Veri kaydetme fonksiyonları
+// GÜÇLÜ VERİ KORUMA SİSTEMİ
+function createDataBackup(filePath, dataType) {
+    try {
+        const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+        const backupFile = `${filePath}.backup.${timestamp}`;
+        const latestBackup = `${filePath}.backup`;
+        
+        if (fs.existsSync(filePath)) {
+            // Timestamp'li backup oluştur
+            fs.copyFileSync(filePath, backupFile);
+            // En son backup'ı güncelle
+            fs.copyFileSync(filePath, latestBackup);
+            console.log(`🛡️ ${dataType} backup oluşturuldu: ${backupFile}`);
+        }
+        return true;
+    } catch (error) {
+        console.error(`❌ ${dataType} backup oluşturma hatası:`, error);
+        return false;
+    }
+}
+
+function restoreFromBackup(filePath, dataType) {
+    try {
+        const latestBackup = `${filePath}.backup`;
+        if (fs.existsSync(latestBackup)) {
+            fs.copyFileSync(latestBackup, filePath);
+            console.log(`🔄 ${dataType} backup'tan geri yüklendi`);
+            return true;
+        }
+        return false;
+    } catch (error) {
+        console.error(`❌ ${dataType} backup geri yükleme hatası:`, error);
+        return false;
+    }
+}
+
+// Veri kaydetme fonksiyonları - GÜÇLÜ KORUMA İLE
 function saveUsers(usersData) {
     try {
-        // VERİ KORUMA - Backup oluştur
-        const backupFile = USERS_FILE + '.backup';
-        if (fs.existsSync(USERS_FILE)) {
-            fs.copyFileSync(USERS_FILE, backupFile);
+        // VERİ KORUMA - Çoklu backup sistemi
+        createDataBackup(USERS_FILE, 'Users');
+        
+        // Veri bütünlüğü kontrolü
+        if (!Array.isArray(usersData)) {
+            throw new Error('Users data is not an array');
         }
+        
+        // Kritik kullanıcıları koru
+        const criticalUsers = ['admin@revers4.com', 'admin@revers5.com', 'admin@revers8.com'];
+        const existingUsers = loadUsers();
+        
+        // Kritik kullanıcıları mevcut verilerle birleştir
+        criticalUsers.forEach(criticalEmail => {
+            const existingUser = existingUsers.find(u => u.email === criticalEmail);
+            const newUser = usersData.find(u => u.email === criticalEmail);
+            
+            if (existingUser && !newUser) {
+                console.log(`🛡️ Kritik kullanıcı korunuyor: ${criticalEmail}`);
+                usersData.push(existingUser);
+            } else if (existingUser && newUser) {
+                // Mevcut verileri koru
+                Object.assign(newUser, existingUser);
+            }
+        });
         
         fs.writeFileSync(USERS_FILE, JSON.stringify(usersData, null, 2));
         console.log(`✅ Users dosyası başarıyla kaydedildi (${usersData.length} kullanıcı)`);
@@ -72,25 +128,38 @@ function saveUsers(usersData) {
         console.error('❌ Users dosyası kaydedilirken hata:', error);
         
         // Hata durumunda backup'tan geri yükle
-        const backupFile = USERS_FILE + '.backup';
-        if (fs.existsSync(backupFile)) {
-            try {
-                fs.copyFileSync(backupFile, USERS_FILE);
-                console.log('🔄 Backup\'tan geri yüklendi');
-            } catch (restoreError) {
-                console.error('❌ Backup geri yüklenirken hata:', restoreError);
-            }
+        if (!restoreFromBackup(USERS_FILE, 'Users')) {
+            console.error('❌ Users verisi tamamen kayboldu!');
         }
     }
 }
 
 function savePins() {
     try {
-        // VERİ KORUMA - Backup oluştur
-        const backupFile = PINS_FILE + '.backup';
-        if (fs.existsSync(PINS_FILE)) {
-            fs.copyFileSync(PINS_FILE, backupFile);
+        // VERİ KORUMA - Çoklu backup sistemi
+        createDataBackup(PINS_FILE, 'Pins');
+        
+        // Veri bütünlüğü kontrolü
+        if (!Array.isArray(pins)) {
+            throw new Error('Pins data is not an array');
         }
+        
+        // Mevcut PIN'leri koru
+        const existingPins = loadPins();
+        const criticalPins = existingPins.filter(pin => 
+            pin.creatorEmail === 'admin@revers4.com' || 
+            pin.creatorEmail === 'admin@revers5.com' ||
+            pin.creatorEmail === 'admin@revers8.com'
+        );
+        
+        // Kritik PIN'leri mevcut verilerle birleştir
+        criticalPins.forEach(criticalPin => {
+            const existingPin = pins.find(p => p.pin === criticalPin.pin);
+            if (!existingPin) {
+                console.log(`🛡️ Kritik PIN korunuyor: ${criticalPin.pin}`);
+                pins.push(criticalPin);
+            }
+        });
         
         fs.writeFileSync(PINS_FILE, JSON.stringify(pins, null, 2));
         console.log(`✅ Pins dosyası başarıyla kaydedildi (${pins.length} PIN)`);
@@ -98,25 +167,69 @@ function savePins() {
         console.error('❌ Pins dosyası kaydedilirken hata:', error);
         
         // Hata durumunda backup'tan geri yükle
-        const backupFile = PINS_FILE + '.backup';
-        if (fs.existsSync(backupFile)) {
-            try {
-                fs.copyFileSync(backupFile, PINS_FILE);
-                console.log('🔄 PIN Backup\'tan geri yüklendi');
-            } catch (restoreError) {
-                console.error('❌ PIN Backup geri yüklenirken hata:', restoreError);
-            }
+        if (!restoreFromBackup(PINS_FILE, 'Pins')) {
+            console.error('❌ Pins verisi tamamen kayboldu!');
         }
     }
 }
 
 function saveEnterprises(enterprisesData) {
     try {
-        // VERİ KORUMA - Backup oluştur
-        const backupFile = ENTERPRISES_FILE + '.backup';
-        if (fs.existsSync(ENTERPRISES_FILE)) {
-            fs.copyFileSync(ENTERPRISES_FILE, backupFile);
+        // VERİ KORUMA - Çoklu backup sistemi
+        createDataBackup(ENTERPRISES_FILE, 'Enterprises');
+        
+        // Veri bütünlüğü kontrolü
+        if (!Array.isArray(enterprisesData)) {
+            throw new Error('Enterprises data is not an array');
         }
+        
+        // Mevcut enterprise'ları koru
+        const existingEnterprises = loadEnterprises();
+        
+        // Kritik enterprise'ları mevcut verilerle birleştir
+        existingEnterprises.forEach(existingEnterprise => {
+            const newEnterprise = enterprisesData.find(e => e.id === existingEnterprise.id);
+            
+            if (existingEnterprise && !newEnterprise) {
+                console.log(`🛡️ Kritik enterprise korunuyor: ${existingEnterprise.name}`);
+                enterprisesData.push(existingEnterprise);
+            } else if (existingEnterprise && newEnterprise) {
+                // Mevcut üyeleri koru
+                if (existingEnterprise.members && existingEnterprise.members.length > 0) {
+                    if (!newEnterprise.members) {
+                        newEnterprise.members = [];
+                    }
+                    
+                    // Mevcut üyeleri yeni enterprise'a ekle
+                    existingEnterprise.members.forEach(member => {
+                        const memberExists = newEnterprise.members.some(m => 
+                            (typeof m === 'string' && m === member) ||
+                            (typeof m === 'object' && m.email === member.email)
+                        );
+                        
+                        if (!memberExists) {
+                            console.log(`🛡️ Enterprise üyesi korunuyor: ${typeof member === 'string' ? member : member.email}`);
+                            newEnterprise.members.push(member);
+                        }
+                    });
+                }
+                
+                // Users array'ini de koru
+                if (existingEnterprise.users && existingEnterprise.users.length > 0) {
+                    if (!newEnterprise.users) {
+                        newEnterprise.users = [];
+                    }
+                    
+                    existingEnterprise.users.forEach(user => {
+                        const userExists = newEnterprise.users.some(u => u.email === user.email);
+                        if (!userExists) {
+                            console.log(`🛡️ Enterprise user korunuyor: ${user.email}`);
+                            newEnterprise.users.push(user);
+                        }
+                    });
+                }
+            }
+        });
         
         fs.writeFileSync(ENTERPRISES_FILE, JSON.stringify(enterprisesData, null, 2));
         console.log(`✅ Enterprises dosyası başarıyla kaydedildi (${enterprisesData.length} enterprise)`);
@@ -124,21 +237,19 @@ function saveEnterprises(enterprisesData) {
         console.error('❌ Enterprises dosyası kaydedilirken hata:', error);
         
         // Hata durumunda backup'tan geri yükle
-        const backupFile = ENTERPRISES_FILE + '.backup';
-        if (fs.existsSync(backupFile)) {
-            try {
-                fs.copyFileSync(backupFile, ENTERPRISES_FILE);
-                console.log('🔄 Enterprise Backup\'tan geri yüklendi');
-            } catch (restoreError) {
-                console.error('❌ Enterprise Backup geri yüklenirken hata:', restoreError);
-            }
+        if (!restoreFromBackup(ENTERPRISES_FILE, 'Enterprises')) {
+            console.error('❌ Enterprises verisi tamamen kayboldu!');
         }
     }
 }
 
+// GÜÇLÜ VERİ KORUMA SİSTEMİ BAŞLATMA
+console.log('🛡️ GÜÇLÜ VERİ KORUMA SİSTEMİ AKTİF');
+
 // Kayıtlı kullanıcıları saklamak için global array
 let users = loadUsers();
 if (users.length === 0) {
+    console.log('📝 Yeni kullanıcı verisi oluşturuluyor');
     // Eğer dosyadan yüklenen veri yoksa, varsayılan verileri ekle
     users = [
         {
@@ -159,6 +270,8 @@ if (users.length === 0) {
     ];
     saveUsers(users);
 } else {
+    console.log(`🛡️ ${users.length} kullanıcı verisi korunuyor`);
+    
     // Kalıcı admin kontrolü - Her deploy'da admin hesabını koru
     const adminUser = users.find(user => user.email === 'admin@revers8.com');
     if (adminUser) {
@@ -168,10 +281,20 @@ if (users.length === 0) {
         adminUser.isBanned = false;
         adminUser.unbannedAt = null;
         adminUser.unbannedBy = null;
+        console.log('🛡️ Admin kullanıcı korundu');
     }
     
-    // TÜM KULLANICILARI KORU - Hiçbirini silme
-    console.log(`✅ ${users.length} kullanıcı korundu`);
+    // Kritik kullanıcıları koru
+    const criticalUsers = ['admin@revers4.com', 'admin@revers5.com', 'admin@revers8.com'];
+    criticalUsers.forEach(criticalEmail => {
+        const user = users.find(u => u.email === criticalEmail);
+        if (user) {
+            user.isBanned = false;
+            user.unbannedAt = null;
+            user.unbannedBy = null;
+            console.log(`🛡️ Kritik kullanıcı korundu: ${criticalEmail}`);
+        }
+    });
     
     // Her kullanıcı için güvenlik kontrolü
     users.forEach(user => {
@@ -192,10 +315,9 @@ if (users.length === 0) {
 // Enterprise'ları saklamak için in-memory store
 let enterprises = loadEnterprises();
 if (enterprises.length === 0) {
-    console.log('🏢 Enterprise dosyası boş, yeni enterprise\'lar oluşturulacak');
+    console.log('📝 Yeni enterprise verisi oluşturuluyor');
 } else {
-    // TÜM ENTERPRISE'LARI KORU - Hiçbirini silme
-    console.log(`✅ ${enterprises.length} enterprise korundu`);
+    console.log(`🛡️ ${enterprises.length} enterprise verisi korunuyor`);
     
     // Her enterprise için güvenlik kontrolü
     enterprises.forEach(enterprise => {
@@ -208,6 +330,31 @@ if (enterprises.length === 0) {
         if (!enterprise.users) {
             enterprise.users = [];
         }
+        
+        // Kritik enterprise'ları koru
+        if (enterprise.name === 'Revers') {
+            console.log(`🛡️ Kritik enterprise korunuyor: ${enterprise.name}`);
+            
+            // Owner'ı koru
+            if (enterprise.ownerEmail && !enterprise.members.includes(enterprise.ownerEmail)) {
+                enterprise.members.push(enterprise.ownerEmail);
+                console.log(`🛡️ Enterprise owner korundu: ${enterprise.ownerEmail}`);
+            }
+            
+            // Users array'inde owner'ı koru
+            if (enterprise.ownerEmail) {
+                const ownerInUsers = enterprise.users.find(u => u.email === enterprise.ownerEmail);
+                if (!ownerInUsers) {
+                    enterprise.users.push({
+                        email: enterprise.ownerEmail,
+                        name: enterprise.ownerEmail.split('@')[0],
+                        role: 'owner',
+                        joinedAt: enterprise.createdAt
+                    });
+                    console.log(`🛡️ Enterprise owner users array'inde korundu: ${enterprise.ownerEmail}`);
+                }
+            }
+        }
     });
     
     saveEnterprises(enterprises);
@@ -216,10 +363,9 @@ if (enterprises.length === 0) {
 // PIN'leri saklamak için global array
 let pins = loadPins();
 if (pins.length === 0) {
-    console.log('📌 PIN dosyası boş, yeni PIN\'ler oluşturulacak');
+    console.log('📝 Yeni PIN verisi oluşturuluyor');
 } else {
-    // TÜM PIN'LERİ KORU - Hiçbirini silme
-    console.log(`✅ ${pins.length} PIN korundu`);
+    console.log(`🛡️ ${pins.length} PIN verisi korunuyor`);
     
     // Her PIN için güvenlik kontrolü
     pins.forEach(pin => {
@@ -231,6 +377,12 @@ if (pins.length === 0) {
         }
         if (!pin.scanResults) {
             pin.scanResults = [];
+        }
+        
+        // Kritik PIN'leri koru
+        const criticalEmails = ['admin@revers4.com', 'admin@revers5.com', 'admin@revers8.com'];
+        if (criticalEmails.includes(pin.creatorEmail)) {
+            console.log(`🛡️ Kritik PIN korunuyor: ${pin.pin} (${pin.creatorEmail})`);
         }
     });
     
