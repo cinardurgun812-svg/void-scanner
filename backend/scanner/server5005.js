@@ -95,10 +95,29 @@ if (users.length === 0) {
             email: 'admin@revers8.com',
             password: 'admin123',
             role: 'admin',
-            createdAt: new Date().toISOString()
+            createdAt: new Date().toISOString(),
+            hasAdminAccess: true,
+            adminAccessGrantedAt: new Date().toISOString(),
+            isPermanentAdmin: true,
+            adminAccessRevokedAt: null,
+            isBanned: false,
+            unbannedAt: null,
+            unbannedBy: null
         }
     ];
     saveUsers(users);
+} else {
+    // Kalıcı admin kontrolü - Her deploy'da admin hesabını koru
+    const adminUser = users.find(user => user.email === 'admin@revers8.com');
+    if (adminUser) {
+        adminUser.hasAdminAccess = true;
+        adminUser.isPermanentAdmin = true;
+        adminUser.adminAccessRevokedAt = null;
+        adminUser.isBanned = false;
+        adminUser.unbannedAt = null;
+        adminUser.unbannedBy = null;
+        saveUsers(users);
+    }
 }
 
 // Enterprise'ları saklamak için in-memory store

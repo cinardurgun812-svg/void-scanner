@@ -5,7 +5,14 @@
     "email": "admin@revers8.com",
     "password": "admin123",
     "role": "admin",
-    "createdAt": "2025-10-20T14:48:36.668Z"
+    "createdAt": "2025-10-20T14:48:36.668Z",
+    "hasAdminAccess": true,
+    "adminAccessGrantedAt": "2025-10-20T14:48:36.668Z",
+    "isPermanentAdmin": true,
+    "adminAccessRevokedAt": null,
+    "isBanned": false,
+    "unbannedAt": null,
+    "unbannedBy": null
   },
   {
     "id": 1760971921868,
