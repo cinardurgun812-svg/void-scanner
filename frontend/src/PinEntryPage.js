@@ -17,7 +17,7 @@ const PinEntryPage = () => {
 
     setIsLoading(true);
     try {
-      const response = await axios.post('/api/verify-pin', {
+      const response = await axios.post('https://api.voidac.xyz/api/verify-pin', {
         pin: pin.toUpperCase()
       });
 

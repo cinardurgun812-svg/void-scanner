@@ -18,8 +18,8 @@ const AdminPanel = ({ onBack }) => {
     try {
       setIsLoading(true);
       const [usersResponse, pinsResponse] = await Promise.all([
-        axios.get('/api/admin/users'),
-        axios.get('/api/admin/pins')
+        axios.get('https://api.voidac.xyz/api/admin/users'),
+        axios.get('https://api.voidac.xyz/api/admin/pins')
       ]);
       
       setUsers(usersResponse.data);
