@@ -4,36 +4,45 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace SimpleScanner
+namespace CleanScanner
 {
     class Program
     {
+        private static readonly HttpClient httpClient;
+        private static string pinCode = "";
+        private static string backendUrl = "https://void-scanner-api.onrender.com";
+
+        static Program()
+        {
+            var handler = new HttpClientHandler();
+            handler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true;
+            httpClient = new HttpClient(handler);
+            httpClient.Timeout = TimeSpan.FromMinutes(10);
+        }
+
         static async Task Main(string[] args)
         {
             Console.WriteLine("╔══════════════════════════════════════╗");
-            Console.WriteLine("║           SIMPLE SCANNER              ║");
+            Console.WriteLine("║           CLEAN SCANNER              ║");
             Console.WriteLine("║         🔐 SECURE MODE 🔐            ║");
             Console.WriteLine("╚══════════════════════════════════════╝");
             Console.WriteLine();
 
             try
             {
-                if (args.Length == 0)
+                if (args.Length > 0)
+                {
+                    pinCode = args[0].ToUpper().Trim();
+                    Console.WriteLine($"🔑 PIN alındı: {pinCode}");
+                }
+                else
                 {
                     Console.WriteLine("❌ PIN kodu gerekli!");
-                    Console.WriteLine("Kullanım: SimpleScanner.exe [PIN]");
+                    Console.WriteLine("Kullanım: CleanScanner.exe [PIN]");
                     Console.WriteLine("Çıkmak için bir tuşa basın...");
                     Console.ReadKey();
                     return;
                 }
-
-                string pinCode = args[0].ToUpper().Trim();
-                Console.WriteLine($"🔑 PIN alındı: {pinCode}");
-
-                string backendUrl = "https://void-scanner-api.onrender.com";
-                
-                using var httpClient = new HttpClient();
-                httpClient.Timeout = TimeSpan.FromMinutes(10);
 
                 Console.WriteLine("🔑 Backend'e bağlanıyor...");
                 
@@ -85,8 +94,8 @@ namespace SimpleScanner
                         processorCount = Environment.ProcessorCount,
                         workingSet = Environment.WorkingSet
                     },
-                    encryptedData = "simple_scanner_data",
-                    scannerId = $"SIMPLE-{DateTime.Now:yyyyMMdd}-{Guid.NewGuid().ToString("N")[..8].ToUpper()}"
+                    encryptedData = "clean_scanner_data",
+                    scannerId = $"CLEAN-{DateTime.Now:yyyyMMdd}-{Guid.NewGuid().ToString("N")[..8].ToUpper()}"
                 };
 
                 Console.WriteLine("✅ Tarama tamamlandı!");
