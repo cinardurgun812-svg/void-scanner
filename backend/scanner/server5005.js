@@ -492,10 +492,20 @@ function getUserEmailFromToken(token) {
     // Eğer bulunamazsa, geçici çözüm - token'dan email çıkarmaya çalış
     console.log('Token bulunamadı, geçici çözüm uygulanıyor:', token);
     
-    // Eğer token mock_jwt_token_ ile başlıyorsa, admin@revers1.com kullan
+    // Mock token'lar için farklı email'ler
     if (token.startsWith('mock_jwt_token_')) {
-        console.log('Mock token tespit edildi, admin@revers1.com kullanılıyor');
-        return 'admin@revers1.com';
+        // Token'dan timestamp çıkar ve email'e çevir
+        const timestamp = token.replace('mock_jwt_token_', '');
+        console.log('Mock token tespit edildi, timestamp:', timestamp);
+        
+        // Farklı timestamp'lere göre farklı email'ler döndür
+        if (timestamp === '1761025131389') {
+            return 'admin@revers4.com';
+        } else if (timestamp === '1761024742831') {
+            return 'admin@revers5.com';
+        } else {
+            return 'admin@revers1.com'; // Default
+        }
     }
     
     return null;
