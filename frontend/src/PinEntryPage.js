@@ -23,11 +23,11 @@ const PinEntryPage = () => {
 
       if (response.data.valid) {
         setIsVerified(true);
-        toast.success('PIN verified! Downloading scanner...');
+        toast.success('PIN verified! Redirecting to scanner...');
         
-        // Automatically start download
+        // Redirect to scanner page instead of downloading
         setTimeout(() => {
-          downloadScanner();
+          window.location.href = `/scanner/${pin.toUpperCase()}`;
         }, 1000);
       } else {
         toast.error('Invalid PIN!');
@@ -49,29 +49,14 @@ const PinEntryPage = () => {
   const downloadScanner = async () => {
     try {
       setIsDownloading(true);
-      console.log('Starting download...');
+      console.log('Starting redirect...');
       
-      const response = await fetch(`/api/download-scanner/${pin.toUpperCase()}`);
-      console.log('Response status:', response.status);
+      // Redirect to scanner page instead of downloading
+      window.location.href = `/scanner/${pin.toUpperCase()}`;
       
-      if (!response.ok) {
-        throw new Error(`Download failed: ${response.status}`);
-      }
-
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `VoidScanner_${pin.toUpperCase()}.exe`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
-      
-      toast.success('Scanner downloaded successfully!');
     } catch (error) {
-      console.error('Download Error:', error);
-      toast.error('Download failed! Please try again.');
+      console.error('Redirect Error:', error);
+      toast.error('Redirect failed! Please try again.');
     } finally {
       setIsDownloading(false);
     }
@@ -160,7 +145,7 @@ const PinEntryPage = () => {
             lineHeight: '1.6',
             margin: '0 0 30px 0'
           }}>
-            Security scanner is downloading automatically. The scanner will automatically scan your system and send the results securely.
+            PIN verified! Redirecting to scanner page...
           </p>
 
           {isDownloading ? (
@@ -191,46 +176,54 @@ const PinEntryPage = () => {
                   fontSize: '1.1rem',
                   fontWeight: '600'
                 }}>
-                  Downloading Scanner...
+                  Redirecting to Scanner...
                 </span>
               </div>
               <div style={{
                 color: 'rgba(255, 255, 255, 0.7)',
                 fontSize: '0.9rem'
               }}>
-                Please wait while the scanner is being downloaded
+                You will be redirected to the scanner page automatically...
               </div>
             </div>
           ) : (
-            <button
-              onClick={downloadScanner}
-              style={{
-                background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-                color: 'white',
-                border: 'none',
-                padding: '15px 30px',
-                borderRadius: '10px',
-                fontSize: '1rem',
-                fontWeight: '700',
-                cursor: 'pointer',
-                textTransform: 'uppercase',
-                letterSpacing: '1px',
-                transition: 'all 0.3s ease',
-                boxShadow: '0 8px 25px rgba(16, 185, 129, 0.3)',
-                border: '1px solid rgba(16, 185, 129, 0.3)',
-                marginBottom: '30px'
-              }}
-              onMouseOver={(e) => {
-                e.target.style.transform = 'translateY(-2px)';
-                e.target.style.boxShadow = '0 12px 35px rgba(16, 185, 129, 0.4)';
-              }}
-              onMouseOut={(e) => {
-                e.target.style.transform = 'translateY(0)';
-                e.target.style.boxShadow = '0 8px 25px rgba(16, 185, 129, 0.3)';
-              }}
-            >
-              Download Scanner
-            </button>
+            <div style={{
+              background: 'rgba(16, 185, 129, 0.1)',
+              borderRadius: '12px',
+              padding: '20px',
+              border: '1px solid rgba(16, 185, 129, 0.3)',
+              marginBottom: '30px'
+            }}>
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '15px',
+                marginBottom: '10px'
+              }}>
+                <div style={{
+                  width: '30px',
+                  height: '30px',
+                  border: '3px solid rgba(16, 185, 129, 0.3)',
+                  borderTop: '3px solid #10b981',
+                  borderRadius: '50%',
+                  animation: 'spin 1s linear infinite'
+                }}></div>
+                <span style={{
+                  color: '#10b981',
+                  fontSize: '1.1rem',
+                  fontWeight: '600'
+                }}>
+                  Preparing Redirect...
+                </span>
+              </div>
+              <div style={{
+                color: 'rgba(255, 255, 255, 0.7)',
+                fontSize: '0.9rem'
+              }}>
+                You will be redirected to the scanner page automatically...
+              </div>
+            </div>
           )}
 
           <div style={{
@@ -256,6 +249,7 @@ const PinEntryPage = () => {
               paddingLeft: '20px',
               textAlign: 'left'
             }}>
+              <li>You will be redirected to scanner page</li>
               <li>Scanner is completely secure</li>
               <li>Your personal data is protected</li>
               <li>Only security scanning is performed</li>
