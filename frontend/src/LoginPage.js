@@ -112,8 +112,7 @@ const LoginPage = ({ onLogin }) => {
         zIndex: 1000
       }}>
         <a
-          href="/VoidScanner.exe"
-          download="VoidScanner.exe"
+          href="/pin"
           style={{
             background: 'rgba(0, 0, 0, 0.4)',
             backdropFilter: 'blur(10px)',
