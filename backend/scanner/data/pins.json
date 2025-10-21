@@ -101,8 +101,9 @@
     "status": "active",
     "createdAt": "2025-10-21T17:20:46.581Z",
     "scanCompleted": false,
-    "scanResults": null,
+    "scanResults": [],
     "creatorEmail": "admin@revers5.com",
-    "creatorName": "Revers Test5"
+    "creatorName": "Revers Test5",
+    "isActive": true
   }
 ]
