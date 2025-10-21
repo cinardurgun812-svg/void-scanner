@@ -1416,10 +1416,10 @@ app.post('/api/enterprises/:enterpriseId/members', (req, res) => {
     }
 });
 
-// Enterprise üye çıkarma
+// Enterprise üye çıkarma - Query parameter ile email
 app.delete('/api/enterprises/:enterpriseId/members', (req, res) => {
     const { enterpriseId } = req.params;
-    const { email } = req.body;
+    const { email } = req.query; // Body yerine query parameter kullan
     
     console.log('Enterprise üye çıkarılıyor:', { enterpriseId, email });
     
@@ -1428,6 +1428,7 @@ app.delete('/api/enterprises/:enterpriseId/members', (req, res) => {
         
         const enterpriseIndex = enterprises.findIndex(e => e.id === enterpriseId);
         if (enterpriseIndex === -1) {
+            console.log('❌ Enterprise bulunamadı:', enterpriseId);
             return res.status(404).json({ 
                 success: false, 
                 message: 'Enterprise not found' 
@@ -1435,11 +1436,15 @@ app.delete('/api/enterprises/:enterpriseId/members', (req, res) => {
         }
         
         if (!enterprises[enterpriseIndex].members) {
+            console.log('❌ Enterprise\'da üye bulunamadı');
             return res.status(400).json({ 
                 success: false, 
                 message: 'No members found in this enterprise' 
             });
         }
+        
+        console.log('🔍 Mevcut üyeler:', enterprises[enterpriseIndex].members);
+        console.log('🔍 Aranan email:', email);
         
         const memberIndex = enterprises[enterpriseIndex].members.findIndex(m => {
             // Eğer member string ise (eski format), direkt karşılaştır
@@ -1449,7 +1454,11 @@ app.delete('/api/enterprises/:enterpriseId/members', (req, res) => {
             // Eğer member obje ise (yeni format), email alanını karşılaştır
             return m.email === email;
         });
+        
+        console.log('🔍 Member index:', memberIndex);
+        
         if (memberIndex === -1) {
+            console.log('❌ Üye enterprise\'da bulunamadı:', email);
             return res.status(404).json({ 
                 success: false, 
                 message: 'Member not found in this enterprise' 
@@ -1457,13 +1466,15 @@ app.delete('/api/enterprises/:enterpriseId/members', (req, res) => {
         }
         
         // Üyeyi çıkar
-        enterprises[enterpriseIndex].members.splice(memberIndex, 1);
+        const removedMember = enterprises[enterpriseIndex].members.splice(memberIndex, 1);
+        console.log('🗑️ Çıkarılan üye:', removedMember);
         
         // Users array'inden de çıkar
         if (enterprises[enterpriseIndex].users) {
             const userIndex = enterprises[enterpriseIndex].users.findIndex(u => u.email === email);
             if (userIndex !== -1) {
                 enterprises[enterpriseIndex].users.splice(userIndex, 1);
+                console.log('🗑️ Users array\'inden de çıkarıldı');
             }
         }
         
