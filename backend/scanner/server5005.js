@@ -192,7 +192,7 @@ if (users.length === 0) {
 // Enterprise'ları saklamak için in-memory store
 let enterprises = loadEnterprises();
 if (enterprises.length === 0) {
-    console.log('🏢 Enterprise dosyası boş, yeni enterprise'lar oluşturulacak');
+    console.log('🏢 Enterprise dosyası boş, yeni enterprise\'lar oluşturulacak');
 } else {
     // TÜM ENTERPRISE'LARI KORU - Hiçbirini silme
     console.log(`✅ ${enterprises.length} enterprise korundu`);
