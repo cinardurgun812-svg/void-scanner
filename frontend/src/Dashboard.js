@@ -162,7 +162,7 @@ const Dashboard = ({ user: propUser, onLogout }) => {
       
       // Debug: Backend API endpoint kontrolü
       console.log('🔍 Backend API endpoint kontrolü:', {
-        apiUrl: 'http://localhost:5005/api/admin/enterprises',
+        apiUrl: 'https://api.voidac.xyz/api/admin/enterprises',
         timestamp: new Date().toISOString()
       });
       

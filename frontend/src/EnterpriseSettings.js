@@ -15,7 +15,7 @@ const EnterpriseSettings = ({ user, onBack }) => {
 
   const fetchEnterprises = async () => {
     try {
-      const res = await axios.get('http://localhost:5005/api/admin/enterprises');
+      const res = await axios.get('https://api.voidac.xyz/api/admin/enterprises');
       const ents = res.data || [];
       setEnterprises(ents);
       const mine = ents.filter(e => e.ownerEmail === user?.email || (e.members || []).includes(user?.email));
@@ -33,7 +33,7 @@ const EnterpriseSettings = ({ user, onBack }) => {
     if (!email) return toast.error('Email girin');
     try {
       setLoading(true);
-      const res = await axios.post(`http://localhost:5005/api/enterprises/${selectedEntId}/add-member`, { email });
+      const res = await axios.post(`https://api.voidac.xyz/api/enterprises/${selectedEntId}/add-member`, { email });
       toast.success('Üye eklendi');
       setEmail('');
       await fetchEnterprises();
