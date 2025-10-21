@@ -48,6 +48,7 @@ namespace VoidScanner
                 if (args.Length > 0)
                 {
                     pinCode = args[0].ToUpper().Trim();
+                    Console.WriteLine($"🔑 PIN alındı: {pinCode}");
                 }
                 else
                 {
