@@ -483,8 +483,12 @@ app.post('/api/scan-results', (req, res) => {
 
 // Token'dan email çıkarma fonksiyonu
 function getUserEmailFromToken(token) {
+    console.log('🔍 getUserEmailFromToken çağrıldı, token:', token);
+    
     // GÜNCEL VERİYİ DOSYADAN YÜKLE
     const currentUsers = loadUsers();
+    console.log('🔍 Mevcut kullanıcı sayısı (getUserEmailFromToken):', currentUsers.length);
+    console.log('🔍 Mevcut token\'lar:', currentUsers.map(u => ({ email: u.email, token: u.token })));
     
     // Token'ı users array'inde ara
     const user = currentUsers.find(u => u.token === token);
@@ -494,24 +498,28 @@ function getUserEmailFromToken(token) {
     }
     
     // Eğer bulunamazsa, geçici çözüm - token'dan email çıkarmaya çalış
-    console.log('Token bulunamadı, geçici çözüm uygulanıyor:', token);
+    console.log('❌ Token bulunamadı, geçici çözüm uygulanıyor:', token);
     
     // Mock token'lar için farklı email'ler
     if (token.startsWith('mock_jwt_token_')) {
         // Token'dan timestamp çıkar ve email'e çevir
         const timestamp = token.replace('mock_jwt_token_', '');
-        console.log('Mock token tespit edildi, timestamp:', timestamp);
+        console.log('🔍 Mock token tespit edildi, timestamp:', timestamp);
         
         // Farklı timestamp'lere göre farklı email'ler döndür
         if (timestamp === '1761025131389') {
+            console.log('🔍 Timestamp 1761025131389 -> admin@revers4.com');
             return 'admin@revers4.com';
         } else if (timestamp === '1761024742831') {
+            console.log('🔍 Timestamp 1761024742831 -> admin@revers5.com');
             return 'admin@revers5.com';
         } else {
+            console.log('🔍 Default timestamp -> admin@revers1.com');
             return 'admin@revers1.com'; // Default
         }
     }
     
+    console.log('❌ Token çözülemedi');
     return null;
 }
 
@@ -520,36 +528,43 @@ function getUserEmailFromToken(token) {
 
 // PIN listesi endpoint
 app.get('/api/my-pins', (req, res) => {
-    console.log('PIN listesi isteği (Port 5005)');
+    console.log('🔍 PIN listesi isteği (Port 5005)');
     
     // Authorization header'dan token'ı al
     const authHeader = req.headers.authorization;
+    console.log('🔍 Authorization header:', authHeader);
+    
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        console.log('❌ Token gerekli');
         return res.status(401).json({ success: false, message: 'Token gerekli' });
     }
     
     const token = authHeader.substring(7);
-    console.log('Token:', token);
+    console.log('🔍 Token:', token);
     
     // Token'dan kullanıcı email'ini çıkar
     const userEmail = getUserEmailFromToken(token);
+    console.log('🔍 Kullanıcı email:', userEmail);
     
     if (!userEmail) {
+        console.log('❌ Geçersiz token');
         return res.status(401).json({ success: false, message: 'Geçersiz token' });
     }
     
-    console.log('Kullanıcı email:', userEmail);
-    console.log('Mevcut PIN sayısı:', pins.length);
+    console.log('🔍 Mevcut PIN sayısı:', pins.length);
+    console.log('🔍 Tüm PIN\'ler:', pins.map(p => ({ pin: p.pin, creatorEmail: p.creatorEmail })));
     
     // Sadece bu kullanıcının PIN'lerini filtrele
     const userPins = pins.filter(pin => pin.creatorEmail === userEmail);
-    console.log('Kullanıcının PIN sayısı:', userPins.length);
+    console.log('🔍 Kullanıcının PIN sayısı:', userPins.length);
+    console.log('🔍 Kullanıcının PIN\'leri:', userPins.map(p => p.pin));
     
     // PIN'leri tarihe göre sırala (en yeni en üstte)
     const sortedPins = userPins.sort((a, b) => {
         return new Date(b.createdAt) - new Date(a.createdAt);
     });
     
+    console.log('✅ PIN listesi gönderiliyor:', sortedPins.length, 'PIN');
     res.json(sortedPins);
 });
 
@@ -1011,25 +1026,35 @@ app.delete('/api/admin/enterprises/:id', deleteEnterprise);
 // Kullanıcı bilgilerini getirme
 app.get('/api/user-info', (req, res) => {
     const token = req.headers.authorization?.replace('Bearer ', '');
-    console.log('User info isteği (Port 5005)');
+    console.log('🔍 User info isteği (Port 5005)');
+    console.log('🔍 Token:', token);
+    console.log('🔍 Authorization header:', req.headers.authorization);
     
     if (!token) {
+        console.log('❌ Token yok');
         return res.status(401).json({ success: false, message: 'Token gerekli' });
     }
     
     const userEmail = getUserEmailFromToken(token);
+    console.log('🔍 getUserEmailFromToken sonucu:', userEmail);
+    
     if (!userEmail) {
+        console.log('❌ Geçersiz token');
         return res.status(401).json({ success: false, message: 'Geçersiz token' });
     }
     
     // GÜNCEL VERİYİ DOSYADAN YÜKLE
     const currentUsers = loadUsers();
+    console.log('🔍 Mevcut kullanıcı sayısı:', currentUsers.length);
+    console.log('🔍 Mevcut kullanıcılar:', currentUsers.map(u => u.email));
+    
     const user = currentUsers.find(u => u.email === userEmail);
     if (!user) {
+        console.log('❌ Kullanıcı bulunamadı:', userEmail);
         return res.status(404).json({ success: false, message: 'Kullanıcı bulunamadı' });
     }
     
-    console.log('🔍 User info debug:', {
+    console.log('✅ User info debug:', {
         email: userEmail,
         role: user.role,
         hasAdminAccess: user.hasAdminAccess
