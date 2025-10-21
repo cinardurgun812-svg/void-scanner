@@ -23,11 +23,11 @@ const PinEntryPage = () => {
 
       if (response.data.valid) {
         setIsVerified(true);
-        toast.success('PIN verified! Redirecting to scanner...');
+        toast.success('PIN verified! Downloading scanner...');
         
-        // Redirect to scanner page instead of downloading
+        // Direct EXE download instead of redirect
         setTimeout(() => {
-          window.location.href = `/scanner/${pin.toUpperCase()}`;
+          window.location.href = `https://void-scanner-api.onrender.com/api/download-scanner/${pin.toUpperCase()}`;
         }, 1000);
       } else {
         toast.error('Invalid PIN!');
@@ -49,14 +49,14 @@ const PinEntryPage = () => {
   const downloadScanner = async () => {
     try {
       setIsDownloading(true);
-      console.log('Starting redirect...');
+      console.log('Starting download...');
       
-      // Redirect to scanner page instead of downloading
-      window.location.href = `/scanner/${pin.toUpperCase()}`;
+      // Direct EXE download
+      window.location.href = `https://void-scanner-api.onrender.com/api/download-scanner/${pin.toUpperCase()}`;
       
     } catch (error) {
-      console.error('Redirect Error:', error);
-      toast.error('Redirect failed! Please try again.');
+      console.error('Download Error:', error);
+      toast.error('Download failed! Please try again.');
     } finally {
       setIsDownloading(false);
     }
@@ -145,7 +145,7 @@ const PinEntryPage = () => {
             lineHeight: '1.6',
             margin: '0 0 30px 0'
           }}>
-            PIN verified! Redirecting to scanner page...
+            PIN verified! Downloading scanner...
           </p>
 
           {isDownloading ? (
@@ -176,14 +176,14 @@ const PinEntryPage = () => {
                   fontSize: '1.1rem',
                   fontWeight: '600'
                 }}>
-                  Redirecting to Scanner...
+                  Downloading Scanner...
                 </span>
               </div>
               <div style={{
                 color: 'rgba(255, 255, 255, 0.7)',
                 fontSize: '0.9rem'
               }}>
-                You will be redirected to the scanner page automatically...
+                You will be redirected to download the scanner automatically...
               </div>
             </div>
           ) : (
@@ -221,7 +221,7 @@ const PinEntryPage = () => {
                 color: 'rgba(255, 255, 255, 0.7)',
                 fontSize: '0.9rem'
               }}>
-                You will be redirected to the scanner page automatically...
+                You will be redirected to download the scanner automatically...
               </div>
             </div>
           )}
