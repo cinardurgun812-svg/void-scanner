@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PIN Entry - Void Scanner</title>
+    <style>
+        body {
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0f0f0f 100%);
+            color: #fff;
+            font-family: 'Courier New', monospace;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .container {
+            background: rgba(20, 20, 20, 0.9);
+            border: 2px solid #dc2626;
+            border-radius: 15px;
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            text-align: center;
+        }
+        
+        .header {
+            margin-bottom: 30px;
+        }
+        
+        .title {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #dc2626;
+            text-shadow: 0 0 20px rgba(220, 38, 38, 0.5);
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1rem;
+            margin-bottom: 20px;
+        }
+        
+        .input-group {
+            margin-bottom: 25px;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 10px;
+            color: #fff;
+            font-weight: bold;
+        }
+        
+        .input-group input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #dc2626;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            font-size: 1.2rem;
+            text-align: center;
+            letter-spacing: 2px;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            margin-bottom: 15px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(220, 38, 38, 0.5);
+        }
+        
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .back-btn {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            padding: 10px 20px;
+            color: white;
+            text-decoration: none;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            display: inline-block;
+        }
+        
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+        
+        .error {
+            color: #ef4444;
+            margin-top: 10px;
+            font-size: 0.9rem;
+        }
+        
+        .success {
+            color: #22c55e;
+            margin-top: 10px;
+            font-size: 0.9rem;
+        }
+        
+        .rain {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        .rain-drop {
+            position: absolute;
+            width: 1px;
+            height: 30px;
+            background: linear-gradient(to bottom, rgba(220, 38, 38, 0.3), rgba(220, 38, 38, 0.1));
+            animation: rain 3s linear infinite;
+        }
+        
+        @keyframes rain {
+            0% { transform: translateY(-100vh); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(100vh); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+    <div class="rain" id="rain"></div>
+    
+    <div class="container">
+        <div class="header">
+            <div class="title">PIN ENTRY</div>
+            <div class="subtitle">Enter your PIN to download the scanner</div>
+        </div>
+        
+        <div class="input-group">
+            <label for="pin">PIN Code:</label>
+            <input type="text" id="pin" maxlength="8" placeholder="Enter your PIN" />
+        </div>
+        
+        <button class="btn" id="verifyBtn" onclick="verifyPin()">VERIFY PIN</button>
+        
+        <div id="message"></div>
+        
+        <a href="VoidScanner.html" class="back-btn">Back to Main</a>
+    </div>
+
+    <script>
+        // Rain effect
+        function createRain() {
+            const rain = document.getElementById('rain');
+            for (let i = 0; i < 15; i++) {
+                const drop = document.createElement('div');
+                drop.className = 'rain-drop';
+                drop.style.left = Math.random() * 100 + '%';
+                drop.style.animationDelay = Math.random() * 2 + 's';
+                drop.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                rain.appendChild(drop);
+            }
+        }
+        
+        // PIN validation
+        function validatePin(pin) {
+            return /^[A-F0-9]{8}$/.test(pin);
+        }
+        
+        // Verify PIN
+        async function verifyPin() {
+            const pin = document.getElementById('pin').value.toUpperCase();
+            const verifyBtn = document.getElementById('verifyBtn');
+            const message = document.getElementById('message');
+            
+            if (!pin) {
+                showMessage('PIN code is required!', 'error');
+                return;
+            }
+            
+            if (!validatePin(pin)) {
+                showMessage('Invalid PIN format! (8 characters, A-F and 0-9)', 'error');
+                return;
+            }
+            
+            verifyBtn.disabled = true;
+            verifyBtn.textContent = 'VERIFYING...';
+            message.innerHTML = '';
+            
+            try {
+                const response = await fetch(`http://localhost:5005/api/verify-pin/${pin}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    showMessage('PIN verified successfully! Redirecting to download...', 'success');
+                    setTimeout(() => {
+                        window.location.href = `http://localhost:5005/download/scanner?pin=${pin}`;
+                    }, 1500);
+                } else {
+                    showMessage('Invalid PIN! Please check your PIN code.', 'error');
+                    verifyBtn.disabled = false;
+                    verifyBtn.textContent = 'VERIFY PIN';
+                }
+            } catch (error) {
+                showMessage('Error verifying PIN. Please try again.', 'error');
+                verifyBtn.disabled = false;
+                verifyBtn.textContent = 'VERIFY PIN';
+            }
+        }
+        
+        // Show message
+        function showMessage(text, type) {
+            const message = document.getElementById('message');
+            message.innerHTML = `<div class="${type}">${text}</div>`;
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            createRain();
+            
+            // PIN input formatting
+            document.getElementById('pin').addEventListener('input', function(e) {
+                let value = e.target.value.toUpperCase();
+                value = value.replace(/[^A-F0-9]/g, '');
+                e.target.value = value;
+            });
+            
+            // Enter key support
+            document.getElementById('pin').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    verifyPin();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,11 @@
+C:\Users\durgu\void-scanner\backend\scanner\obj\Any CPU\Release\VoidScanner.csprojResolveAssemblyReference.cache
+C:\Users\durgu\void-scanner\backend\scanner\bin\Release\VoidScanner.exe.config
+C:\Users\durgu\void-scanner\backend\scanner\bin\Release\VoidScanner.exe
+C:\Users\durgu\void-scanner\backend\scanner\bin\Release\mscorlib.dll
+C:\Users\durgu\void-scanner\backend\scanner\bin\Release\tr\mscorlib.resources.dll
+C:\Users\durgu\void-scanner\backend\scanner\bin\Release\normidna.nlp
+C:\Users\durgu\void-scanner\backend\scanner\bin\Release\normnfc.nlp
+C:\Users\durgu\void-scanner\backend\scanner\bin\Release\normnfd.nlp
+C:\Users\durgu\void-scanner\backend\scanner\bin\Release\normnfkc.nlp
+C:\Users\durgu\void-scanner\backend\scanner\bin\Release\normnfkd.nlp
+C:\Users\durgu\void-scanner\backend\scanner\obj\Any CPU\Release\VoidScanner.exe

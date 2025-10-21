@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Void Scanner - Advanced Security Scanner</title>
+    <style>
+        body {
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0f0f0f 100%);
+            color: #fff;
+            font-family: 'Courier New', monospace;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .container {
+            background: rgba(20, 20, 20, 0.9);
+            border: 2px solid #dc2626;
+            border-radius: 15px;
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .title {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #dc2626;
+            text-shadow: 0 0 20px rgba(220, 38, 38, 0.5);
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1.1rem;
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 10px;
+            color: #fff;
+            font-weight: bold;
+        }
+        
+        .input-group input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #dc2626;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            font-size: 1.2rem;
+            text-align: center;
+            letter-spacing: 2px;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(220, 38, 38, 0.5);
+        }
+        
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .scan-results {
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(220, 38, 38, 0.1);
+            border-radius: 10px;
+            border: 1px solid rgba(220, 38, 38, 0.3);
+            display: none;
+        }
+        
+        .scan-item {
+            margin: 10px 0;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 5px;
+        }
+        
+        .status {
+            color: #22c55e;
+            font-weight: bold;
+        }
+        
+        .loading {
+            text-align: center;
+            color: #eab308;
+        }
+        
+        .top-buttons {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+            z-index: 1000;
+        }
+        
+        .glass-btn {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 12px 24px;
+            color: white;
+            text-decoration: none;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .glass-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.4);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+        
+        .glass-btn.download {
+            background: rgba(220, 38, 38, 0.2);
+            border-color: rgba(220, 38, 38, 0.4);
+        }
+        
+        .glass-btn.download:hover {
+            background: rgba(220, 38, 38, 0.3);
+            border-color: rgba(220, 38, 38, 0.6);
+        }
+        
+        .rain {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        .rain-drop {
+            position: absolute;
+            width: 1px;
+            height: 30px;
+            background: linear-gradient(to bottom, rgba(220, 38, 38, 0.3), rgba(220, 38, 38, 0.1));
+            animation: rain 3s linear infinite;
+        }
+        
+        @keyframes rain {
+            0% { transform: translateY(-100vh); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(100vh); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+    <div class="rain" id="rain"></div>
+    
+    <div class="top-buttons">
+        <a href="#" class="glass-btn" onclick="goToLogin()">Login</a>
+        <a href="#" class="glass-btn download" onclick="goToDownload()">Download</a>
+        <a href="#" class="glass-btn" onclick="goToAdmin()">Admin</a>
+    </div>
+    
+    <div class="container">
+        <div class="header">
+            <div class="title">VOID SCANNER</div>
+            <div class="subtitle">Advanced Security Scanner</div>
+        </div>
+        
+        <div class="input-group">
+            <label for="pin">PIN Kodunu Girin:</label>
+            <input type="text" id="pin" maxlength="8" placeholder="PIN KODU (8 karakter)" />
+        </div>
+        
+        <button class="btn" id="scanBtn" onclick="startScan()">PIN DOĞRULA VE TARAMA BAŞLAT</button>
+        
+        <div class="scan-results" id="scanResults">
+            <h3>Tarama Sonuçları</h3>
+            <div class="scan-item">
+                <span class="status">✅ PIN Doğrulandı!</span>
+            </div>
+            <div class="scan-item">
+                <span class="status">🔍 Şüpheli süreçler aranıyor...</span>
+            </div>
+            <div class="scan-item">
+                <span class="status">📁 Şüpheli dosyalar aranıyor...</span>
+            </div>
+            <div class="scan-item">
+                <span class="status">📅 Son değişiklikler kontrol ediliyor...</span>
+            </div>
+            <div class="scan-item">
+                <span class="status">🌐 Ağ bağlantıları kontrol ediliyor...</span>
+            </div>
+            <div class="scan-item">
+                <span class="status">📤 Sonuçlar backend'e gönderiliyor...</span>
+            </div>
+            <div class="scan-item">
+                <span class="status">✅ Tarama tamamlandı!</span>
+            </div>
+            <div class="scan-item">
+                <strong>Risk Seviyesi:</strong> Düşük<br>
+                <strong>Şüpheli Süreçler:</strong> 0<br>
+                <strong>Şüpheli Dosyalar:</strong> 0<br>
+                <strong>Son Değişiklikler:</strong> 0
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Navigation functions
+        function goToLogin() {
+            window.location.href = 'http://localhost:3000';
+        }
+        
+        function goToDownload() {
+            window.location.href = 'pin-entry.html';
+        }
+        
+        function goToAdmin() {
+            window.location.href = 'http://localhost:3001';
+        }
+        
+        // Rain effect
+        function createRain() {
+            const rain = document.getElementById('rain');
+            for (let i = 0; i < 20; i++) {
+                const drop = document.createElement('div');
+                drop.className = 'rain-drop';
+                drop.style.left = Math.random() * 100 + '%';
+                drop.style.animationDelay = Math.random() * 2 + 's';
+                drop.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                rain.appendChild(drop);
+            }
+        }
+        
+        // PIN validation
+        function validatePin(pin) {
+            return /^[A-F0-9]{8}$/.test(pin);
+        }
+        
+        // Start scan
+        function startScan() {
+            const pin = document.getElementById('pin').value.toUpperCase();
+            const scanBtn = document.getElementById('scanBtn');
+            const scanResults = document.getElementById('scanResults');
+            
+            if (!pin) {
+                alert('PIN kodu gerekli!');
+                return;
+            }
+            
+            if (!validatePin(pin)) {
+                alert('Geçersiz PIN formatı! (8 karakter, A-F ve 0-9)');
+                return;
+            }
+            
+            scanBtn.disabled = true;
+            scanBtn.textContent = 'TARAMA YAPILIYOR...';
+            scanResults.style.display = 'block';
+            
+            // Simulate scan process
+            setTimeout(() => {
+                scanBtn.disabled = false;
+                scanBtn.textContent = 'PIN DOĞRULA VE TARAMA BAŞLAT';
+                alert('Tarama tamamlandı! Sonuçlar yukarıda görüntüleniyor.');
+            }, 8000);
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            createRain();
+            
+            // PIN input formatting
+            document.getElementById('pin').addEventListener('input', function(e) {
+                let value = e.target.value.toUpperCase();
+                value = value.replace(/[^A-F0-9]/g, '');
+                e.target.value = value;
+            });
+        });
+    </script>
+</body>
+</html>

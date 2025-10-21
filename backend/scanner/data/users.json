@@ -1,0 +1,42 @@
+[
+  {
+    "id": 1,
+    "name": "Admin User",
+    "email": "admin@baba.com",
+    "password": "admin123",
+    "role": "admin",
+    "createdAt": "2025-10-20T14:48:36.668Z"
+  },
+  {
+    "id": 1760971921868,
+    "name": "Revers Test 4 ",
+    "email": "admin@revers4.com",
+    "password": "admin12345",
+    "role": "client",
+    "createdAt": "2025-10-20T14:52:01.868Z",
+    "token": "mock_jwt_token_1761025131389",
+    "hasAdminAccess": false,
+    "adminAccessGrantedAt": "2025-10-20T15:21:34.335Z",
+    "passwordChangedAt": "2025-10-21T05:37:54.105Z",
+    "passwordChangedBy": "admin",
+    "isBanned": false,
+    "unbannedAt": "2025-10-21T05:38:45.326Z",
+    "unbannedBy": "admin",
+    "adminAccessRevokedAt": "2025-10-21T05:39:20.057Z"
+  },
+  {
+    "id": 1760971989062,
+    "name": "Revers Test5",
+    "email": "admin@revers5.com",
+    "password": "admin123",
+    "role": "client",
+    "createdAt": "2025-10-20T14:53:09.062Z",
+    "token": "mock_jwt_token_1761024742831",
+    "isBanned": false,
+    "unbannedAt": "2025-10-21T05:32:16.352Z",
+    "unbannedBy": "admin",
+    "hasAdminAccess": false,
+    "adminAccessRevokedAt": "2025-10-21T04:07:03.120Z",
+    "adminAccessGrantedAt": "2025-10-21T04:06:58.259Z"
+  }
+]
