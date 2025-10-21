@@ -7,6 +7,15 @@
     "members": [
       "admin@revers4.com"
     ],
-    "createdAt": "2025-10-20T14:52:43.279Z"
+    "createdAt": "2025-10-20T14:52:43.279Z",
+    "isActive": true,
+    "users": [
+      {
+        "email": "admin@revers4.com",
+        "name": "Revers Test 4",
+        "role": "owner",
+        "joinedAt": "2025-10-20T14:52:43.279Z"
+      }
+    ]
   }
 ]

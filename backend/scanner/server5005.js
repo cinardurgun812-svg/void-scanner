@@ -1374,6 +1374,18 @@ app.post('/api/enterprises/:enterpriseId/members', (req, res) => {
             addedAt: new Date().toISOString()
         });
         
+        // Users array'ine de ekle
+        if (!enterprises[enterpriseIndex].users) {
+            enterprises[enterpriseIndex].users = [];
+        }
+        
+        enterprises[enterpriseIndex].users.push({
+            email: user.email,
+            name: user.name,
+            role: 'member',
+            joinedAt: new Date().toISOString()
+        });
+        
         saveEnterprises(enterprises);
         
         console.log('✅ SUCCESS: Member added to enterprise:', email);
@@ -1432,6 +1444,14 @@ app.delete('/api/enterprises/:enterpriseId/members', (req, res) => {
         
         // Üyeyi çıkar
         enterprises[enterpriseIndex].members.splice(memberIndex, 1);
+        
+        // Users array'inden de çıkar
+        if (enterprises[enterpriseIndex].users) {
+            const userIndex = enterprises[enterpriseIndex].users.findIndex(u => u.email === email);
+            if (userIndex !== -1) {
+                enterprises[enterpriseIndex].users.splice(userIndex, 1);
+            }
+        }
         
         saveEnterprises(enterprises);
         
