@@ -778,7 +778,7 @@ const Dashboard = ({ user: propUser, onLogout }) => {
               {/* Action Buttons */}
               <div style={{ display: 'flex', gap: '10px' }}>
                 {/* Panel Button - Only show if user has admin access */}
-                {user.hasAdminAccess && (
+                {(user.hasAdminAccess || user.role === 'admin') && (
                   <button
                     onClick={() => window.open('https://admin.voidac.xyz', '_blank')}
                     style={{
