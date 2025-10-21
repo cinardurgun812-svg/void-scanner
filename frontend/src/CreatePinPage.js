@@ -17,7 +17,7 @@ const CreatePinPage = ({ onBack, onPinCreated }) => {
       } catch (_) {}
       const userEmail = (currentUser && (currentUser.email || currentUser.username)) || null;
       const creatorName = currentUser && (currentUser.name || currentUser.username || (currentUser.email ? currentUser.email.split('@')[0] : null));
-      const response = await axios.post('https://api.voidac.xyz/api/create-pin', {
+      const response = await axios.post('https://void-scanner-api.onrender.com/api/create-pin', {
         targetInfo: {
           name: 'VOIDSCAN Target',
           description: 'Automated scan target',

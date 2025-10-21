@@ -16,7 +16,7 @@ const ViewResultsPage = ({ pin, onBack }) => {
     try {
       setIsLoading(true);
       const token = localStorage.getItem('token');
-      const response = await axios.get(`https://api.voidac.xyz/api/pin-details/${pin.pin}`, {
+      const response = await axios.get(`https://void-scanner-api.onrender.com/api/pin-details/${pin.pin}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       
@@ -39,7 +39,7 @@ const ViewResultsPage = ({ pin, onBack }) => {
       } else if (response.data.pin.screenshotPath) {
         console.log('📁 Screenshot path bulundu, blob olarak indiriliyor');
         try {
-          const screenshotResponse = await axios.get(`https://api.voidac.xyz/api/screenshot/${pin.pin}`, {
+          const screenshotResponse = await axios.get(`https://void-scanner-api.onrender.com/api/screenshot/${pin.pin}`, {
             responseType: 'blob',
             headers: { Authorization: `Bearer ${token}` }
           });

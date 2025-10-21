@@ -109,7 +109,7 @@ const Dashboard = ({ user: propUser, onLogout }) => {
 
   const fetchEnterprises = async () => {
     try {
-      const res = await axios.get('https://api.voidac.xyz/api/admin/enterprises');
+      const res = await axios.get('https://void-scanner-api.onrender.com/api/admin/enterprises');
       const ents = res.data || [];
       setEnterprises(ents);
       
@@ -162,7 +162,7 @@ const Dashboard = ({ user: propUser, onLogout }) => {
       
       // Debug: Backend API endpoint kontrolü
       console.log('🔍 Backend API endpoint kontrolü:', {
-        apiUrl: 'https://api.voidac.xyz/api/admin/enterprises',
+        apiUrl: 'https://void-scanner-api.onrender.com/api/admin/enterprises',
         timestamp: new Date().toISOString()
       });
       
@@ -282,7 +282,7 @@ const Dashboard = ({ user: propUser, onLogout }) => {
       const token = localStorage.getItem('token');
       console.log('Token:', token ? 'Mevcut' : 'Yok');
       
-      const response = await axios.delete(`https://api.voidac.xyz/api/pins/${pinId}`, {
+      const response = await axios.delete(`https://void-scanner-api.onrender.com/api/pins/${pinId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       
