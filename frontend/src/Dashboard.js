@@ -41,7 +41,7 @@ const Dashboard = ({ user: propUser, onLogout }) => {
       const token = localStorage.getItem('token');
       if (!token) return;
       
-      const response = await axios.get('https://api.voidac.xyz/api/user-info', {
+      const response = await axios.get('https://void-scanner-api.onrender.com/api/user-info', {
         headers: { Authorization: `Bearer ${token}` }
       });
       
@@ -60,7 +60,7 @@ const Dashboard = ({ user: propUser, onLogout }) => {
     try {
       setIsLoading(true);
       const token = localStorage.getItem('token');
-      const response = await axios.get('https://api.voidac.xyz/api/my-pins', {
+      const response = await axios.get('https://void-scanner-api.onrender.com/api/my-pins', {
         headers: { Authorization: `Bearer ${token}` }
       });
       console.log('PINler yuklendi:', response.data);
@@ -82,7 +82,7 @@ const Dashboard = ({ user: propUser, onLogout }) => {
         return;
       }
       const token = localStorage.getItem('token');
-      const response = await axios.post('https://api.voidac.xyz/api/create-pin', {
+      const response = await axios.post('https://void-scanner-api.onrender.com/api/create-pin', {
         targetInfo: {
           name: 'Random Target',
           description: 'Test target for scanning'

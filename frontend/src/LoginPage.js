@@ -19,7 +19,7 @@ const LoginPage = ({ onLogin }) => {
     try {
       if (isLogin) {
         // Giriş
-        const response = await axios.post('https://api.voidac.xyz/api/login', {
+        const response = await axios.post('https://void-scanner-api.onrender.com/api/login', {
           email: formData.email,
           password: formData.password
         });
@@ -45,7 +45,7 @@ const LoginPage = ({ onLogin }) => {
           return;
         }
         
-        const response = await axios.post('https://api.voidac.xyz/api/register', {
+        const response = await axios.post('https://void-scanner-api.onrender.com/api/register', {
           name: formData.name,
           email: formData.email,
           password: formData.password
