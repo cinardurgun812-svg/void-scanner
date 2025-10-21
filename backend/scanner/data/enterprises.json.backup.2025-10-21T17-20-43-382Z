@@ -5,12 +5,7 @@
     "ownerEmail": "admin@revers4.com",
     "seats": 5,
     "members": [
-      "admin@revers4.com",
-      {
-        "email": "admin@revers5.com",
-        "username": "Revers Test5",
-        "addedAt": "2025-10-21T17:20:43.382Z"
-      }
+      "admin@revers4.com"
     ],
     "createdAt": "2025-10-20T14:52:43.279Z",
     "isActive": true,
@@ -20,12 +15,6 @@
         "name": "Revers Test 4",
         "role": "owner",
         "joinedAt": "2025-10-20T14:52:43.279Z"
-      },
-      {
-        "email": "admin@revers5.com",
-        "name": "Revers Test5",
-        "role": "member",
-        "joinedAt": "2025-10-21T17:20:43.382Z"
       }
     ]
   }

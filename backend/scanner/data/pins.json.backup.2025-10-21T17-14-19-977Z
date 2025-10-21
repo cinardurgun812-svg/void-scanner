@@ -94,15 +94,5 @@
     "creatorEmail": "admin@revers5.com",
     "creatorName": "Revers Test5",
     "isActive": true
-  },
-  {
-    "_id": "1761067246581",
-    "pin": "87GI4UD6",
-    "status": "active",
-    "createdAt": "2025-10-21T17:20:46.581Z",
-    "scanCompleted": false,
-    "scanResults": null,
-    "creatorEmail": "admin@revers5.com",
-    "creatorName": "Revers Test5"
   }
 ]

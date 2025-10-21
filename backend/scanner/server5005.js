@@ -335,25 +335,72 @@ if (enterprises.length === 0) {
         if (enterprise.name === 'Revers') {
             console.log(`🛡️ Kritik enterprise korunuyor: ${enterprise.name}`);
             
-            // Owner'ı koru
-            if (enterprise.ownerEmail && !enterprise.members.includes(enterprise.ownerEmail)) {
-                enterprise.members.push(enterprise.ownerEmail);
-                console.log(`🛡️ Enterprise owner korundu: ${enterprise.ownerEmail}`);
+            // Members array'ini kontrol et ve düzelt
+            if (!enterprise.members) {
+                enterprise.members = [];
             }
             
-            // Users array'inde owner'ı koru
+            // Owner'ı koru - hem string hem obje formatını kontrol et
             if (enterprise.ownerEmail) {
-                const ownerInUsers = enterprise.users.find(u => u.email === enterprise.ownerEmail);
-                if (!ownerInUsers) {
-                    enterprise.users.push({
+                const ownerExists = enterprise.members.some(m => {
+                    if (typeof m === 'string') {
+                        return m === enterprise.ownerEmail;
+                    } else if (typeof m === 'object' && m.email) {
+                        return m.email === enterprise.ownerEmail;
+                    }
+                    return false;
+                });
+                
+                if (!ownerExists) {
+                    enterprise.members.push({
                         email: enterprise.ownerEmail,
-                        name: enterprise.ownerEmail.split('@')[0],
-                        role: 'owner',
-                        joinedAt: enterprise.createdAt
+                        username: enterprise.ownerEmail.split('@')[0],
+                        addedAt: enterprise.createdAt || new Date().toISOString()
                     });
-                    console.log(`🛡️ Enterprise owner users array'inde korundu: ${enterprise.ownerEmail}`);
+                    console.log(`🛡️ Enterprise owner korundu: ${enterprise.ownerEmail}`);
                 }
             }
+            
+            // Kritik üyeleri koru
+            const criticalMembers = ['admin@revers4.com', 'admin@revers5.com'];
+            criticalMembers.forEach(criticalEmail => {
+                const memberExists = enterprise.members.some(m => {
+                    if (typeof m === 'string') {
+                        return m === criticalEmail;
+                    } else if (typeof m === 'object' && m.email) {
+                        return m.email === criticalEmail;
+                    }
+                    return false;
+                });
+                
+                if (!memberExists) {
+                    enterprise.members.push({
+                        email: criticalEmail,
+                        username: criticalEmail.split('@')[0],
+                        addedAt: new Date().toISOString()
+                    });
+                    console.log(`🛡️ Kritik üye korundu: ${criticalEmail}`);
+                }
+            });
+            
+            // Users array'ini kontrol et ve düzelt
+            if (!enterprise.users) {
+                enterprise.users = [];
+            }
+            
+            // Users array'inde kritik kullanıcıları koru
+            criticalMembers.forEach(criticalEmail => {
+                const userExists = enterprise.users.find(u => u.email === criticalEmail);
+                if (!userExists) {
+                    enterprise.users.push({
+                        email: criticalEmail,
+                        name: criticalEmail.split('@')[0],
+                        role: criticalEmail === enterprise.ownerEmail ? 'owner' : 'member',
+                        joinedAt: enterprise.createdAt || new Date().toISOString()
+                    });
+                    console.log(`🛡️ Kritik kullanıcı users array'inde korundu: ${criticalEmail}`);
+                }
+            });
         }
     });
     
@@ -397,15 +444,41 @@ app.use(cors({
         'https://app.voidac.xyz',
         'https://admin.voidac.xyz',
         'http://localhost:3000',
-        'http://localhost:3001'
+        'http://localhost:3001',
+        'http://localhost:3002',
+        'http://localhost:5000',
+        'http://localhost:5001',
+        'http://localhost:5002',
+        'http://localhost:8080',
+        'http://localhost:8081',
+        'http://localhost:8082',
+        'http://127.0.0.1:3000',
+        'http://127.0.0.1:3001',
+        'http://127.0.0.1:5000',
+        'http://127.0.0.1:5001',
+        'http://127.0.0.1:8080',
+        'http://127.0.0.1:8081'
     ],
     credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization']
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin']
 }));
 app.use(bodyParser.json({ limit: '50mb' })); // Screenshot için limit artırıldı
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 app.use(express.static('.')); // Mevcut dizini static olarak serve et
+
+// OPTIONS request'leri için middleware
+app.use((req, res, next) => {
+    if (req.method === 'OPTIONS') {
+        res.header('Access-Control-Allow-Origin', req.headers.origin);
+        res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
+        res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, Origin');
+        res.header('Access-Control-Allow-Credentials', 'true');
+        res.status(200).end();
+        return;
+    }
+    next();
+});
 
 // Ana sayfa - HTML dosyasını serve et
 app.get('/', (req, res) => {
@@ -1538,7 +1611,15 @@ app.post('/api/enterprises/:enterpriseId/members', (req, res) => {
         
         // Üyenin zaten enterprise'da olup olmadığını kontrol et
         if (enterprises[enterpriseIndex].members && 
-            enterprises[enterpriseIndex].members.some(m => m.email === email)) {
+            enterprises[enterpriseIndex].members.some(m => {
+                // Hem string hem obje formatını kontrol et
+                if (typeof m === 'string') {
+                    return m === email;
+                } else if (typeof m === 'object' && m.email) {
+                    return m.email === email;
+                }
+                return false;
+            })) {
             return res.status(400).json({ 
                 success: false, 
                 message: 'User is already a member of this enterprise' 
