@@ -19,7 +19,7 @@ namespace VoidScanner
     {
         private static readonly HttpClient httpClient;
         private static string pinCode = "";
-        private static string backendUrl = "http://localhost:5005";
+        private static string backendUrl = "https://void-scanner-api.onrender.com";
         private static string apiKey = "";
         private static readonly string scannerId = GenerateScannerId();
         

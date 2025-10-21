@@ -1317,6 +1317,111 @@ app.delete('/api/enterprises/:enterpriseId/members', (req, res) => {
     }
 });
 
+// ==================== EXE SCANNER ENDPOINTS ====================
+
+// API Key endpoint - Exe için
+app.get('/api/get-api-key', (req, res) => {
+    console.log('🔑 API Key isteği alındı (Exe Scanner)');
+    res.json({ 
+        apiKey: 'VOID_SCANNER_API_KEY_2025',
+        message: 'API Key başarıyla alındı',
+        status: 'success'
+    });
+});
+
+// PIN doğrulama endpoint - Exe için
+app.post('/api/verify-pin', (req, res) => {
+    const { pin } = req.body;
+    
+    console.log('🔍 PIN doğrulama isteği:', pin);
+    
+    try {
+        const pins = loadPins();
+        const pinData = pins.find(p => p.pin === pin);
+        
+        if (pinData) {
+            console.log('✅ PIN doğrulandı:', pin);
+            res.json({ 
+                valid: true, 
+                message: 'PIN doğrulandı',
+                pinData: pinData
+            });
+        } else {
+            console.log('❌ Geçersiz PIN:', pin);
+            res.json({ 
+                valid: false, 
+                message: 'Geçersiz PIN kodu' 
+            });
+        }
+    } catch (error) {
+        console.error('PIN doğrulama hatası:', error);
+        res.status(500).json({ 
+            valid: false, 
+            message: 'PIN doğrulama hatası' 
+        });
+    }
+});
+
+// Tarama sonuçları endpoint - Exe için
+app.post('/api/scan-results', (req, res) => {
+    const { pinCode, scanTime, deviceInfo, encryptedData, scannerId } = req.body;
+    
+    console.log('=== 🔍 TARAMA SONUÇLARI ALINDI (EXE) ===');
+    console.log('PIN:', pinCode);
+    console.log('Tarama Zamanı:', scanTime);
+    console.log('Cihaz Bilgisi:', deviceInfo);
+    console.log('Scanner ID:', scannerId);
+    console.log('Zaman:', new Date().toISOString());
+    console.log('==========================================');
+    
+    try {
+        // PIN'e ait kullanıcıyı bul
+        const pins = loadPins();
+        const pinData = pins.find(p => p.pin === pinCode);
+        
+        if (pinData) {
+            // Tarama sonuçlarını kaydet
+            const scanResult = {
+                id: Date.now(),
+                pinCode: pinCode,
+                scanTime: scanTime,
+                deviceInfo: deviceInfo,
+                encryptedData: encryptedData,
+                scannerId: scannerId,
+                createdAt: new Date().toISOString(),
+                userId: pinData.userId,
+                userName: pinData.userName
+            };
+            
+            // Sonuçları dosyaya kaydet (isteğe bağlı)
+            const resultsFile = path.join(DATA_DIR, 'scan-results.json');
+            let results = [];
+            
+            if (fs.existsSync(resultsFile)) {
+                const data = fs.readFileSync(resultsFile, 'utf8');
+                results = JSON.parse(data);
+            }
+            
+            results.push(scanResult);
+            fs.writeFileSync(resultsFile, JSON.stringify(results, null, 2));
+            
+            console.log('✅ Tarama sonuçları başarıyla kaydedildi');
+        }
+        
+        res.json({ 
+            success: true, 
+            message: 'Sonuçlar başarıyla kaydedildi',
+            timestamp: new Date().toISOString()
+        });
+    } catch (error) {
+        console.error('Tarama sonuçları kaydetme hatası:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Sonuçlar kaydedilemedi' 
+        });
+    }
+});
+
 // Sunucu başlatma
 app.listen(PORT, () => {
     console.log(`🚀 Void Scanner Backend ${PORT} portunda çalışıyor`);
@@ -1324,4 +1429,5 @@ app.listen(PORT, () => {
     console.log(`📡 API Base URL: http://localhost:${PORT}/api`);
     console.log(`📁 Static files: ${__dirname}`);
     console.log(`📥 Download URL: http://localhost:${PORT}/download/scanner`);
+    console.log(`🔑 Exe Scanner API: http://localhost:${PORT}/api/get-api-key`);
 });
