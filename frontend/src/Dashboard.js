@@ -41,7 +41,7 @@ const Dashboard = ({ user: propUser, onLogout }) => {
       const token = localStorage.getItem('token');
       if (!token) return;
       
-      const response = await axios.get('http://localhost:5005/api/user-info', {
+      const response = await axios.get('https://api.voidac.xyz/api/user-info', {
         headers: { Authorization: `Bearer ${token}` }
       });
       
@@ -60,7 +60,7 @@ const Dashboard = ({ user: propUser, onLogout }) => {
     try {
       setIsLoading(true);
       const token = localStorage.getItem('token');
-      const response = await axios.get('http://localhost:5005/api/my-pins', {
+      const response = await axios.get('https://api.voidac.xyz/api/my-pins', {
         headers: { Authorization: `Bearer ${token}` }
       });
       console.log('PINler yuklendi:', response.data);
@@ -82,7 +82,7 @@ const Dashboard = ({ user: propUser, onLogout }) => {
         return;
       }
       const token = localStorage.getItem('token');
-      const response = await axios.post('http://localhost:5005/api/create-pin', {
+      const response = await axios.post('https://api.voidac.xyz/api/create-pin', {
         targetInfo: {
           name: 'Random Target',
           description: 'Test target for scanning'
@@ -109,7 +109,7 @@ const Dashboard = ({ user: propUser, onLogout }) => {
 
   const fetchEnterprises = async () => {
     try {
-      const res = await axios.get('http://localhost:5005/api/admin/enterprises');
+      const res = await axios.get('https://api.voidac.xyz/api/admin/enterprises');
       const ents = res.data || [];
       setEnterprises(ents);
       
@@ -282,7 +282,7 @@ const Dashboard = ({ user: propUser, onLogout }) => {
       const token = localStorage.getItem('token');
       console.log('Token:', token ? 'Mevcut' : 'Yok');
       
-      const response = await axios.delete(`http://localhost:5005/api/pins/${pinId}`, {
+      const response = await axios.delete(`https://api.voidac.xyz/api/pins/${pinId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       
@@ -780,7 +780,7 @@ const Dashboard = ({ user: propUser, onLogout }) => {
                 {/* Panel Button - Only show if user has admin access */}
                 {user.hasAdminAccess && (
                   <button
-                    onClick={() => window.open('http://localhost:3001', '_blank')}
+                    onClick={() => window.open('https://admin.voidac.xyz', '_blank')}
                     style={{
                       background: 'rgba(220, 38, 38, 0.2)',
                       color: '#dc2626',

@@ -31,9 +31,9 @@ const AdminPanel = () => {
   const fetchData = async () => {
     try {
       const [usersRes, enterprisesRes, pinsRes] = await Promise.all([
-        axios.get('http://localhost:5005/api/users'),
-        axios.get('http://localhost:5005/api/enterprises'),
-        axios.get('http://localhost:5005/api/pins')
+        axios.get('https://api.voidac.xyz/api/users'),
+        axios.get('https://api.voidac.xyz/api/enterprises'),
+        axios.get('https://api.voidac.xyz/api/pins')
       ]);
       
       setUsers(usersRes.data);
@@ -50,7 +50,7 @@ const AdminPanel = () => {
   const fetchUsers = async () => {
     try {
       console.log('🔍 Fetching users...');
-      const response = await axios.get('http://localhost:5005/api/users');
+      const response = await axios.get('https://api.voidac.xyz/api/users');
       setUsers(response.data);
       console.log('🔍 Users updated:', response.data.length, 'admins:', response.data.filter(u => u.role === 'admin').length);
     } catch (error) {
@@ -64,7 +64,7 @@ const AdminPanel = () => {
     setShowUserResults(true);
     
     try {
-      const response = await axios.get(`http://localhost:5005/api/user-results/${user.email}`);
+      const response = await axios.get(`https://api.voidac.xyz/api/user-results/${user.email}`);
       
       // Debug: Frontend'de gelen veriyi kontrol et
       console.log('🔍 Frontend User Results Debug:', {
@@ -93,7 +93,7 @@ const AdminPanel = () => {
 
     setIsChangingPassword(true);
     try {
-      await axios.post('http://localhost:5005/api/admin/change-user-password', {
+      await axios.post('https://api.voidac.xyz/api/admin/change-user-password', {
         email: selectedUser.email,
         newPassword: newPassword.trim()
       });
@@ -115,7 +115,7 @@ const AdminPanel = () => {
     }
 
     try {
-      await axios.post('http://localhost:5005/api/admin/ban-user', {
+      await axios.post('https://api.voidac.xyz/api/admin/ban-user', {
         email: selectedUser.email,
         reason: banReason.trim()
       });
@@ -132,7 +132,7 @@ const AdminPanel = () => {
 
   const unbanUser = async (userEmail) => {
     try {
-      await axios.post('http://localhost:5005/api/admin/unban-user', {
+      await axios.post('https://api.voidac.xyz/api/admin/unban-user', {
         email: userEmail
       });
       
@@ -152,7 +152,7 @@ const AdminPanel = () => {
 
     try {
       console.log('🔍 Granting admin access to:', adminEmail);
-      const response = await axios.post('http://localhost:5005/api/admin/grant-admin-access', { 
+      const response = await axios.post('https://api.voidac.xyz/api/admin/grant-admin-access', { 
         email: adminEmail.trim() 
       });
       
@@ -178,7 +178,7 @@ const AdminPanel = () => {
   const revokeAdminAccess = async (email) => {
     try {
       console.log('🔍 Revoking admin access from:', email);
-      const response = await axios.post('http://localhost:5005/api/admin/revoke-admin-access', { 
+      const response = await axios.post('https://api.voidac.xyz/api/admin/revoke-admin-access', { 
         email: email 
       });
       
@@ -207,7 +207,7 @@ const AdminPanel = () => {
     }
 
     try {
-      await axios.post('http://localhost:5005/api/enterprises', {
+      await axios.post('https://api.voidac.xyz/api/enterprises', {
         name: enterpriseName.trim(),
         ownerEmail: enterpriseOwner.trim(),
         seats: enterpriseSeats
@@ -232,7 +232,7 @@ const AdminPanel = () => {
     }
 
     try {
-      await axios.delete(`http://localhost:5005/api/enterprises/${enterpriseId}`);
+      await axios.delete(`https://api.voidac.xyz/api/enterprises/${enterpriseId}`);
       
       toast.success('Enterprise deleted successfully');
       fetchData();
@@ -254,7 +254,7 @@ const AdminPanel = () => {
     }
 
     try {
-      await axios.post(`http://localhost:5005/api/enterprises/${selectedEnterprise.id}/members`, {
+      await axios.post(`https://api.voidac.xyz/api/enterprises/${selectedEnterprise.id}/members`, {
         email: newMemberEmail.trim()
       });
       
@@ -271,7 +271,7 @@ const AdminPanel = () => {
     if (!selectedEnterprise) return;
 
     try {
-      await axios.delete(`http://localhost:5005/api/enterprises/${selectedEnterprise.id}/members`, {
+      await axios.delete(`https://api.voidac.xyz/api/enterprises/${selectedEnterprise.id}/members`, {
         data: { email: memberEmail }
       });
       
