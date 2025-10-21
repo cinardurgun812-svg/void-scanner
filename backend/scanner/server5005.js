@@ -742,8 +742,9 @@ function getUserEmailFromToken(token) {
             console.log('🔍 Timestamp 1761068037834 -> admin@revers5.com');
             return 'admin@revers5.com';
         } else {
-            console.log('🔍 Default timestamp -> admin@revers5.com');
-            return 'admin@revers5.com'; // Default to revers5
+            // Tüm yeni token'ları admin@revers5.com'a yönlendir
+            console.log('🔍 Yeni token tespit edildi:', timestamp, '-> admin@revers5.com');
+            return 'admin@revers5.com';
         }
     }
     
