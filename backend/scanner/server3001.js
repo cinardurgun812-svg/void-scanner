@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const path = require('path');
-const axios = require('axios');
+const http = require('http');
 
 const app = express();
 const PORT = 3001;
@@ -77,83 +77,139 @@ app.post('/api/login', (req, res) => {
 });
 
 // PIN listesi endpoint - Proxy to server5005
-app.get('/api/my-pins', async (req, res) => {
+app.get('/api/my-pins', (req, res) => {
     console.log('PIN listesi isteği (Port 3001) - Proxy to 5005');
     
-    try {
-        const axios = require('axios');
-        const response = await axios.get('http://localhost:5005/api/my-pins', {
-            headers: {
-                'Authorization': req.headers.authorization
-            }
+    const options = {
+        hostname: 'localhost',
+        port: 5005,
+        path: '/api/my-pins',
+        method: 'GET',
+        headers: {
+            'Authorization': req.headers.authorization
+        }
+    };
+    
+    const proxyReq = http.request(options, (proxyRes) => {
+        let data = '';
+        proxyRes.on('data', (chunk) => {
+            data += chunk;
         });
-        
-        console.log('✅ PIN listesi proxy başarılı:', response.data.length, 'PIN');
-        res.json(response.data);
-    } catch (error) {
+        proxyRes.on('end', () => {
+            console.log('✅ PIN listesi proxy başarılı');
+            res.json(JSON.parse(data));
+        });
+    });
+    
+    proxyReq.on('error', (error) => {
         console.error('❌ PIN listesi proxy hatası:', error.message);
         res.status(500).json({ error: 'PIN listesi alınamadı' });
-    }
+    });
+    
+    proxyReq.end();
 });
 
 // PIN oluşturma endpoint - Proxy to server5005
-app.post('/api/create-pin', async (req, res) => {
+app.post('/api/create-pin', (req, res) => {
     console.log('PIN oluşturma isteği (Port 3001) - Proxy to 5005');
     
-    try {
-        const axios = require('axios');
-        const response = await axios.post('http://localhost:5005/api/create-pin', req.body, {
-            headers: {
-                'Content-Type': 'application/json'
-            }
+    const postData = JSON.stringify(req.body);
+    
+    const options = {
+        hostname: 'localhost',
+        port: 5005,
+        path: '/api/create-pin',
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Content-Length': Buffer.byteLength(postData)
+        }
+    };
+    
+    const proxyReq = http.request(options, (proxyRes) => {
+        let data = '';
+        proxyRes.on('data', (chunk) => {
+            data += chunk;
         });
-        
-        console.log('✅ PIN oluşturma proxy başarılı:', response.data.pin?.pin);
-        res.json(response.data);
-    } catch (error) {
+        proxyRes.on('end', () => {
+            console.log('✅ PIN oluşturma proxy başarılı');
+            res.json(JSON.parse(data));
+        });
+    });
+    
+    proxyReq.on('error', (error) => {
         console.error('❌ PIN oluşturma proxy hatası:', error.message);
         res.status(500).json({ error: 'PIN oluşturulamadı' });
-    }
+    });
+    
+    proxyReq.write(postData);
+    proxyReq.end();
 });
 
 // User info endpoint - Proxy to server5005
-app.get('/api/user-info', async (req, res) => {
+app.get('/api/user-info', (req, res) => {
     console.log('User info isteği (Port 3001) - Proxy to 5005');
     
-    try {
-        const axios = require('axios');
-        const response = await axios.get('http://localhost:5005/api/user-info', {
-            headers: {
-                'Authorization': req.headers.authorization
-            }
+    const options = {
+        hostname: 'localhost',
+        port: 5005,
+        path: '/api/user-info',
+        method: 'GET',
+        headers: {
+            'Authorization': req.headers.authorization
+        }
+    };
+    
+    const proxyReq = http.request(options, (proxyRes) => {
+        let data = '';
+        proxyRes.on('data', (chunk) => {
+            data += chunk;
         });
-        
-        console.log('✅ User info proxy başarılı');
-        res.json(response.data);
-    } catch (error) {
+        proxyRes.on('end', () => {
+            console.log('✅ User info proxy başarılı');
+            res.json(JSON.parse(data));
+        });
+    });
+    
+    proxyReq.on('error', (error) => {
         console.error('❌ User info proxy hatası:', error.message);
         res.status(500).json({ error: 'User info alınamadı' });
-    }
+    });
+    
+    proxyReq.end();
 });
 
 // PIN silme endpoint - Proxy to server5005
-app.delete('/api/pins/:id', async (req, res) => {
+app.delete('/api/pins/:id', (req, res) => {
     console.log('PIN silme isteği (Port 3001) - Proxy to 5005:', req.params.id);
     
-    try {
-        const axios = require('axios');
-        const response = await axios.delete(`http://localhost:5005/api/pins/${req.params.id}`, {
-            headers: {
-                'Authorization': req.headers.authorization
-            }
+    const options = {
+        hostname: 'localhost',
+        port: 5005,
+        path: `/api/pins/${req.params.id}`,
+        method: 'DELETE',
+        headers: {
+            'Authorization': req.headers.authorization
+        }
+    };
+    
+    const proxyReq = http.request(options, (proxyRes) => {
+        let data = '';
+        proxyRes.on('data', (chunk) => {
+            data += chunk;
         });
-        
-        console.log('✅ PIN silme proxy başarılı');
-        res.json(response.data);
-    } catch (error) {
+        proxyRes.on('end', () => {
+            console.log('✅ PIN silme proxy başarılı');
+            res.json(JSON.parse(data));
+        });
+    });
+    
+    proxyReq.on('error', (error) => {
         console.error('❌ PIN silme proxy hatası:', error.message);
         res.status(500).json({ error: 'PIN silinemedi' });
-    }
+    });
+    
+    proxyReq.end();
 });
 
 // Tarama sonuçları endpoint
