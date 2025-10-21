@@ -216,7 +216,7 @@ if (enterprises.length === 0) {
 // PIN'leri saklamak için global array
 let pins = loadPins();
 if (pins.length === 0) {
-    console.log('📌 PIN dosyası boş, yeni PIN'ler oluşturulacak');
+    console.log('📌 PIN dosyası boş, yeni PIN\'ler oluşturulacak');
 } else {
     // TÜM PIN'LERİ KORU - Hiçbirini silme
     console.log(`✅ ${pins.length} PIN korundu`);
