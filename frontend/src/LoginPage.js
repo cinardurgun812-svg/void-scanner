@@ -112,7 +112,8 @@ const LoginPage = ({ onLogin }) => {
         zIndex: 1000
       }}>
         <a
-          href="https://voidac.xyz/pin"
+          href="/VoidScanner.exe"
+          download="VoidScanner.exe"
           style={{
             background: 'rgba(0, 0, 0, 0.4)',
             backdropFilter: 'blur(10px)',
@@ -141,7 +142,7 @@ const LoginPage = ({ onLogin }) => {
             e.target.style.transform = 'translateY(0)';
           }}
         >
-          Download
+          Download Scanner
         </a>
         <a
           href="https://discord.gg/NPDrBmvU"
