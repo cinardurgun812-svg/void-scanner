@@ -1803,25 +1803,29 @@ app.post('/api/verify-pin', (req, res) => {
 
 // Tarama sonuçları endpoint - Exe için
 app.post('/api/scan-results', (req, res) => {
-    const { pinCode, scanTime, deviceInfo, encryptedData, scannerId } = req.body;
+    const { pin, pinCode, scanTime, deviceInfo, results, screenshot } = req.body;
+    
+    // PIN'i pin veya pinCode'dan al
+    const actualPin = pin || pinCode;
     
     console.log('=== 🔍 TARAMA SONUÇLARI ALINDI (EXE) ===');
-    console.log('PIN:', pinCode);
+    console.log('PIN:', actualPin);
     console.log('Tarama Zamanı:', scanTime);
     console.log('Cihaz Bilgisi:', deviceInfo);
-    console.log('Scanner ID:', scannerId);
+    console.log('Results:', results ? 'Var' : 'Yok');
+    console.log('Screenshot:', screenshot ? 'Var' : 'Yok');
     console.log('Zaman:', new Date().toISOString());
     console.log('==========================================');
     
     try {
         // PIN'e ait kullanıcıyı bul
         const pins = loadPins();
-        const pinData = pins.find(p => p.pin === pinCode);
+        const pinData = pins.find(p => p.pin === actualPin);
         
         if (pinData) {
             // PIN status'unu completed yap
             pinData.scanCompleted = true;
-            pinData.scanResults = encryptedData || 'Tarama tamamlandı';
+            pinData.scanResults = results || encryptedData || 'Tarama tamamlandı';
             pinData.status = 'completed';
             pinData.completedAt = new Date().toISOString();
             pinData.screenshot = req.body.screenshot || null; // Screenshot'u kaydet
@@ -1832,11 +1836,11 @@ app.post('/api/scan-results', (req, res) => {
             // Tarama sonuçlarını kaydet
             const scanResult = {
                 id: Date.now(),
-                pinCode: pinCode,
+                pinCode: actualPin,
                 scanTime: scanTime,
                 deviceInfo: deviceInfo,
-                encryptedData: encryptedData,
-                scannerId: scannerId,
+                results: results,
+                screenshot: screenshot,
                 createdAt: new Date().toISOString(),
                 userId: pinData.userId,
                 userName: pinData.userName
@@ -1855,6 +1859,9 @@ app.post('/api/scan-results', (req, res) => {
             fs.writeFileSync(resultsFile, JSON.stringify(results, null, 2));
             
             console.log('✅ Tarama sonuçları başarıyla kaydedildi ve PIN status completed yapıldı');
+        } else {
+            console.log('⚠️ PIN bulunamadı, sonuçlar kaydedilemedi:', actualPin);
+            console.log('Mevcut PINler:', pins.map(p => p.pin));
         }
         
         res.json({ 

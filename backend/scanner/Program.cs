@@ -6,6 +6,7 @@ using System.Threading;
 using System.Net.Http;
 using System.Text;
 using Newtonsoft.Json;
+using System.Net;
 
 namespace VoidScanner
 {
@@ -318,28 +319,37 @@ namespace VoidScanner
                     screenshot = File.Exists("screenshot.jpg") ? Convert.ToBase64String(File.ReadAllBytes("screenshot.jpg")) : null
                 };
                 
-                // Send to backend
-                using (var client = new HttpClient())
+                // Send to backend using WebRequest (better .NET Framework 4.0 support)
+                var json = JsonConvert.SerializeObject(scanResults);
+                var urls = new[]
                 {
-                    client.Timeout = TimeSpan.FromSeconds(30); // 30 saniye timeout
-                    var json = JsonConvert.SerializeObject(scanResults);
-                    var content = new StringContent(json, Encoding.UTF8, "application/json");
-                    
-                    // Try production backend first, then localhost
-                    var urls = new[]
+                    "https://void-scanner-api.onrender.com/api/scan-results",
+                    "http://localhost:5005/api/scan-results"
+                };
+                
+                bool success = false;
+                foreach (var url in urls)
+                {
+                    try
                     {
-                        "https://void-scanner-api.onrender.com/api/scan-results",
-                        "http://localhost:5005/api/scan-results"
-                    };
-                    
-                    bool success = false;
-                    foreach (var url in urls)
-                    {
-                        try
+                        Console.WriteLine("Sonuçlar gönderiliyor: " + url);
+                        
+                        var request = (HttpWebRequest)WebRequest.Create(url);
+                        request.Method = "POST";
+                        request.ContentType = "application/json";
+                        request.Timeout = 30000; // 30 saniye timeout
+                        
+                        var data = Encoding.UTF8.GetBytes(json);
+                        request.ContentLength = data.Length;
+                        
+                        using (var stream = request.GetRequestStream())
                         {
-                            Console.WriteLine("Sonuçlar gönderiliyor: " + url);
-                            var response = client.PostAsync(url, content).Result;
-                            if (response.IsSuccessStatusCode)
+                            stream.Write(data, 0, data.Length);
+                        }
+                        
+                        using (var response = (HttpWebResponse)request.GetResponse())
+                        {
+                            if (response.StatusCode == HttpStatusCode.OK)
                             {
                                 Console.WriteLine("✅ Sonuçlar başarıyla gönderildi: " + url);
                                 success = true;
@@ -350,16 +360,16 @@ namespace VoidScanner
                                 Console.WriteLine("❌ " + url + " hatası: " + response.StatusCode);
                             }
                         }
-                        catch (Exception ex)
-                        {
-                            Console.WriteLine("❌ " + url + " hatası: " + ex.Message);
-                        }
                     }
-                    
-                    if (!success)
+                    catch (Exception ex)
                     {
-                        Console.WriteLine("⚠️ Hiçbir backend'e sonuçlar gönderilemedi!");
+                        Console.WriteLine("❌ " + url + " hatası: " + ex.Message);
                     }
+                }
+                
+                if (!success)
+                {
+                    Console.WriteLine("⚠️ Hiçbir backend'e sonuçlar gönderilemedi!");
                 }
             }
             catch (Exception ex)
