@@ -1000,7 +1000,7 @@ app.get('/api/download-scanner/:pin', (req, res) => {
     
     // PIN-specific EXE oluştur - PIN hardcoded
     const baseExePath = path.join(__dirname, 'CleanAutoScanner.exe');
-    const pinSpecificExePath = path.join(__dirname, `CleanAutoScanner_${pin}.exe`);
+    const pinSpecificExePath = path.join(__dirname, `VoidScanner_${pin}.exe`);
     
     if (require('fs').existsSync(baseExePath)) {
         console.log('Base EXE bulundu, PIN-specific EXE oluşturuluyor:', pin);
@@ -1057,7 +1057,7 @@ app.get('/api/download-scanner/:pin', (req, res) => {
         
         // EXE ve DLL'yi birlikte indir
         const files = [
-            { path: pinSpecificExePath, name: `CleanAutoScanner_${pin}.exe` },
+            { path: pinSpecificExePath, name: `VoidScanner_${pin}.exe` },
             { path: dllInExeDir, name: 'Newtonsoft.Json.dll' }
         ];
         
