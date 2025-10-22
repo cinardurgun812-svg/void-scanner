@@ -327,6 +327,10 @@ namespace VoidScanner
                     "http://localhost:5005/api/scan-results"
                 };
                 
+                // SSL sertifika doğrulamasını devre dışı bırak
+                ServicePointManager.ServerCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true;
+                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
+                
                 bool success = false;
                 foreach (var url in urls)
                 {
