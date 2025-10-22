@@ -30,18 +30,18 @@ namespace VoidScanner
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.ControlBox = false; // Remove all window controls
-            this.BackColor = Color.FromArgb(30, 30, 30);
+            this.BackColor = Color.Black; // Pure black background
             this.ForeColor = Color.White;
             this.TopMost = true; // Always on top
             
-            // Anime picture box
+            // Anime picture box - FULL SCREEN
             animePictureBox = new PictureBox
             {
-                Size = new Size(400, 300),
-                Location = new Point(100, 50),
+                Size = new Size(600, 700), // Full form size
+                Location = new Point(0, 0),
                 SizeMode = PictureBoxSizeMode.Zoom,
-                BackColor = Color.FromArgb(40, 40, 40),
-                BorderStyle = BorderStyle.FixedSingle
+                BackColor = Color.Black,
+                BorderStyle = BorderStyle.None
             };
             
             // Load anime image
@@ -53,66 +53,78 @@ namespace VoidScanner
                 }
                 else
                 {
-                    animePictureBox.BackColor = Color.FromArgb(60, 60, 60);
-                    animePictureBox.Image = CreateFallbackImage();
+                    // Create black background with rain effect
+                    animePictureBox.Image = CreateRainEffectImage();
                 }
             }
             catch
             {
-                animePictureBox.BackColor = Color.FromArgb(60, 60, 60);
-                animePictureBox.Image = CreateFallbackImage();
+                animePictureBox.Image = CreateRainEffectImage();
             }
             
-            // Status label
+            // Status label - OVERLAY on anime image
             statusLabel = new Label
             {
                 Text = "🔐 PIN doğrulanıyor...",
-                Location = new Point(50, 370),
+                Location = new Point(50, 600),
                 Size = new Size(500, 30),
                 Font = new Font("Segoe UI", 12, FontStyle.Bold),
                 TextAlign = ContentAlignment.MiddleCenter,
-                ForeColor = Color.LightGreen
+                ForeColor = Color.LightGreen,
+                BackColor = Color.Transparent
             };
             
-            // Progress bar
+            // Progress bar - OVERLAY on anime image
             progressBar = new ProgressBar
             {
-                Location = new Point(50, 420),
+                Location = new Point(50, 640),
                 Size = new Size(500, 25),
                 Style = ProgressBarStyle.Continuous,
-                Value = 0
-            };
-            
-            // Scan info label
-            var scanInfoLabel = new Label
-            {
-                Text = "• Otomatik güvenlik taraması başlatılıyor\n• Sonuçlar şifreli gönderilir\n• Ekran görüntüsü alınır",
-                Location = new Point(50, 470),
-                Size = new Size(500, 80),
-                Font = new Font("Segoe UI", 10),
-                TextAlign = ContentAlignment.MiddleCenter,
-                ForeColor = Color.LightGray
+                Value = 0,
+                BackColor = Color.Black,
+                ForeColor = Color.LightGreen
             };
             
             // Add controls to form
             this.Controls.Add(animePictureBox);
             this.Controls.Add(statusLabel);
             this.Controls.Add(progressBar);
-            this.Controls.Add(scanInfoLabel);
             
             this.ResumeLayout(false);
         }
         
-        private Image CreateFallbackImage()
+        private Image CreateRainEffectImage()
         {
-            var bitmap = new Bitmap(400, 300);
+            var bitmap = new Bitmap(600, 700);
             using (var g = Graphics.FromImage(bitmap))
             {
-                g.Clear(Color.FromArgb(60, 60, 60));
-                g.DrawString("Void Scanner", new Font("Arial", 24, FontStyle.Bold), 
-                    Brushes.White, new PointF(100, 120));
-                g.DrawString("Security Analysis", new Font("Arial", 14), 
-                    Brushes.LightGray, new PointF(120, 160));
+                // Pure black background
+                g.Clear(Color.Black);
+                
+                // Create rain effect
+                var random = new Random();
+                var pen = new Pen(Color.FromArgb(80, 80, 80), 1); // Dark gray rain
+                
+                // Draw vertical rain lines
+                for (int i = 0; i < 200; i++)
+                {
+                    int x = random.Next(0, 600);
+                    int y1 = random.Next(0, 700);
+                    int y2 = y1 + random.Next(20, 60);
+                    
+                    g.DrawLine(pen, x, y1, x, y2);
+                }
+                
+                // Add some lighter rain lines
+                pen.Color = Color.FromArgb(120, 120, 120);
+                for (int i = 0; i < 100; i++)
+                {
+                    int x = random.Next(0, 600);
+                    int y1 = random.Next(0, 700);
+                    int y2 = y1 + random.Next(10, 30);
+                    
+                    g.DrawLine(pen, x, y1, x, y2);
+                }
             }
             return bitmap;
         }
