@@ -1824,6 +1824,7 @@ app.post('/api/scan-results', (req, res) => {
             pinData.scanResults = encryptedData || 'Tarama tamamlandı';
             pinData.status = 'completed';
             pinData.completedAt = new Date().toISOString();
+            pinData.screenshot = req.body.screenshot || null; // Screenshot'u kaydet
             
             // Veriyi dosyaya kaydet
             savePins();
