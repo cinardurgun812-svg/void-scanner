@@ -4,7 +4,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{12345678-1234-1234-1234-123456789012}</ProjectGuid>
-    <OutputType>WinExe</OutputType>
+    <OutputType>Exe</OutputType>
     <RootNamespace>VoidScanner</RootNamespace>
     <AssemblyName>VoidScanner</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>

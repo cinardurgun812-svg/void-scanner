@@ -52,13 +52,13 @@ namespace VoidScanner
             {
                 if (File.Exists("anime.jpg.jpg"))
                 {
-                    MessageBox.Show("Anime.jpg.jpg bulundu, yükleniyor...");
+                    Console.WriteLine("Anime.jpg.jpg bulundu, yükleniyor...");
                     animePictureBox.Image = Image.FromFile("anime.jpg.jpg");
-                    MessageBox.Show("Anime resmi başarıyla yüklendi!");
+                    Console.WriteLine("Anime resmi başarıyla yüklendi!");
                 }
                 else
                 {
-                    MessageBox.Show("Anime.jpg.jpg bulunamadı, yağmur efekti oluşturuluyor...");
+                    Console.WriteLine("Anime.jpg.jpg bulunamadı, yağmur efekti oluşturuluyor...");
                     // Create black background with rain effect
                     animePictureBox.Image = CreateRainEffectImage();
                 }
@@ -303,28 +303,22 @@ namespace VoidScanner
                     var json = JsonConvert.SerializeObject(scanResults);
                     var content = new StringContent(json, Encoding.UTF8, "application/json");
                     
-                    // Try multiple backend URLs
-                    var urls = new[]
+                    // Try localhost first
+                    try
                     {
-                        "https://void-scanner-api.onrender.com/api/scan-results",
-                        "http://localhost:5005/api/scan-results"
-                    };
-                    
-                    foreach (var url in urls)
+                        var response = client.PostAsync("http://localhost:5005/api/scan-results", content).Result;
+                        if (response.IsSuccessStatusCode)
+                        {
+                            Console.WriteLine("✅ Sonuçlar başarıyla gönderildi: localhost:5005");
+                        }
+                        else
+                        {
+                            Console.WriteLine("❌ localhost:5005 hatası: " + response.StatusCode);
+                        }
+                    }
+                    catch (Exception ex)
                     {
-                        try
-                        {
-                            var response = client.PostAsync(url, content).Result;
-                            if (response.IsSuccessStatusCode)
-                            {
-                                Console.WriteLine("✅ Sonuçlar başarıyla gönderildi: " + url);
-                                break;
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            Console.WriteLine("❌ " + url + " hatası: " + ex.Message);
-                        }
+                        Console.WriteLine("❌ localhost:5005 hatası: " + ex.Message);
                     }
                 }
             }
