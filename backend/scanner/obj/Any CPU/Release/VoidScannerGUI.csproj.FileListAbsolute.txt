@@ -1,0 +1,3 @@
+C:\Users\durgu\void-scanner\backend\scanner\obj\Any CPU\Release\VoidScannerGUI.csprojResolveAssemblyReference.cache
+C:\Users\durgu\void-scanner\backend\scanner\obj\Any CPU\Release\VoidScannerGUI.csproj.GenerateResource.Cache
+C:\Users\durgu\void-scanner\backend\scanner\obj\Any CPU\Release\VoidScanner.Properties.Resources.resources
