@@ -999,7 +999,7 @@ app.get('/api/download-scanner/:pin', (req, res) => {
     }
     
     // PIN-specific EXE oluştur - PIN hardcoded
-    const baseExePath = path.join(__dirname, 'CleanAutoScanner.exe');
+    const baseExePath = path.join(__dirname, 'VoidScanner.exe');
     const pinSpecificExePath = path.join(__dirname, `VoidScanner_${pin}.exe`);
     
     if (require('fs').existsSync(baseExePath)) {
