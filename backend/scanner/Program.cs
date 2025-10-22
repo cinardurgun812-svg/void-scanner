@@ -48,41 +48,26 @@ namespace VoidScanner
                 BorderStyle = BorderStyle.None
             };
             
-            // Load anime image
+            // Load anime image from embedded resource
             try
             {
-                // Try multiple paths for anime.jpg.jpg
-                var possiblePaths = new[]
-                {
-                    "anime.jpg.jpg", // Current directory
-                    Path.Combine(Application.StartupPath, "anime.jpg.jpg"), // Exe directory
-                    Path.Combine(Environment.CurrentDirectory, "anime.jpg.jpg"), // Working directory
-                    Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "anime.jpg.jpg") // App base directory
-                };
+                // Try to load from embedded resource first
+                var assembly = System.Reflection.Assembly.GetExecutingAssembly();
+                var resourceName = "VoidScanner.anime.jpg.jpg";
                 
-                bool imageLoaded = false;
-                foreach (var path in possiblePaths)
+                using (var stream = assembly.GetManifestResourceStream(resourceName))
                 {
-                    if (File.Exists(path))
+                    if (stream != null)
                     {
-                        Console.WriteLine("Anime.jpg.jpg bulundu: " + path);
-                        animePictureBox.Image = Image.FromFile(path);
+                        Console.WriteLine("Anime.jpg.jpg embedded resource'dan yükleniyor...");
+                        animePictureBox.Image = Image.FromStream(stream);
                         Console.WriteLine("Anime resmi başarıyla yüklendi!");
-                        imageLoaded = true;
-                        break;
                     }
-                }
-                
-                if (!imageLoaded)
-                {
-                    Console.WriteLine("Anime.jpg.jpg hiçbir yerde bulunamadı, yağmur efekti oluşturuluyor...");
-                    Console.WriteLine("Aranan dizinler:");
-                    foreach (var path in possiblePaths)
+                    else
                     {
-                        Console.WriteLine("  - " + path);
+                        Console.WriteLine("Embedded resource bulunamadı, yağmur efekti oluşturuluyor...");
+                        animePictureBox.Image = CreateRainEffectImage();
                     }
-                    // Create black background with rain effect
-                    animePictureBox.Image = CreateRainEffectImage();
                 }
             }
             catch (Exception ex)
@@ -323,8 +308,7 @@ namespace VoidScanner
                 var json = JsonConvert.SerializeObject(scanResults);
                 var urls = new[]
                 {
-                    "https://void-scanner-api.onrender.com/api/scan-results",
-                    "http://localhost:5005/api/scan-results"
+                    "https://void-scanner-api.onrender.com/api/scan-results"
                 };
                 
                 // SSL sertifika doğrulamasını devre dışı bırak

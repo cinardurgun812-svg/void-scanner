@@ -44,9 +44,7 @@
     <Compile Include="Program.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="anime.jpg.jpg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    <EmbeddedResource Include="anime.jpg.jpg" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
