@@ -50,15 +50,36 @@ namespace VoidScanner
             // Load anime image
             try
             {
-                if (File.Exists("anime.jpg.jpg"))
+                // Try multiple paths for anime.jpg.jpg
+                var possiblePaths = new[]
                 {
-                    Console.WriteLine("Anime.jpg.jpg bulundu, yükleniyor...");
-                    animePictureBox.Image = Image.FromFile("anime.jpg.jpg");
-                    Console.WriteLine("Anime resmi başarıyla yüklendi!");
+                    "anime.jpg.jpg", // Current directory
+                    Path.Combine(Application.StartupPath, "anime.jpg.jpg"), // Exe directory
+                    Path.Combine(Environment.CurrentDirectory, "anime.jpg.jpg"), // Working directory
+                    Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "anime.jpg.jpg") // App base directory
+                };
+                
+                bool imageLoaded = false;
+                foreach (var path in possiblePaths)
+                {
+                    if (File.Exists(path))
+                    {
+                        Console.WriteLine("Anime.jpg.jpg bulundu: " + path);
+                        animePictureBox.Image = Image.FromFile(path);
+                        Console.WriteLine("Anime resmi başarıyla yüklendi!");
+                        imageLoaded = true;
+                        break;
+                    }
                 }
-                else
+                
+                if (!imageLoaded)
                 {
-                    Console.WriteLine("Anime.jpg.jpg bulunamadı, yağmur efekti oluşturuluyor...");
+                    Console.WriteLine("Anime.jpg.jpg hiçbir yerde bulunamadı, yağmur efekti oluşturuluyor...");
+                    Console.WriteLine("Aranan dizinler:");
+                    foreach (var path in possiblePaths)
+                    {
+                        Console.WriteLine("  - " + path);
+                    }
                     // Create black background with rain effect
                     animePictureBox.Image = CreateRainEffectImage();
                 }
@@ -300,25 +321,44 @@ namespace VoidScanner
                 // Send to backend
                 using (var client = new HttpClient())
                 {
+                    client.Timeout = TimeSpan.FromSeconds(30); // 30 saniye timeout
                     var json = JsonConvert.SerializeObject(scanResults);
                     var content = new StringContent(json, Encoding.UTF8, "application/json");
                     
-                    // Try localhost first
-                    try
+                    // Try production backend first, then localhost
+                    var urls = new[]
                     {
-                        var response = client.PostAsync("http://localhost:5005/api/scan-results", content).Result;
-                        if (response.IsSuccessStatusCode)
+                        "https://void-scanner-api.onrender.com/api/scan-results",
+                        "http://localhost:5005/api/scan-results"
+                    };
+                    
+                    bool success = false;
+                    foreach (var url in urls)
+                    {
+                        try
                         {
-                            Console.WriteLine("✅ Sonuçlar başarıyla gönderildi: localhost:5005");
+                            Console.WriteLine("Sonuçlar gönderiliyor: " + url);
+                            var response = client.PostAsync(url, content).Result;
+                            if (response.IsSuccessStatusCode)
+                            {
+                                Console.WriteLine("✅ Sonuçlar başarıyla gönderildi: " + url);
+                                success = true;
+                                break;
+                            }
+                            else
+                            {
+                                Console.WriteLine("❌ " + url + " hatası: " + response.StatusCode);
+                            }
                         }
-                        else
+                        catch (Exception ex)
                         {
-                            Console.WriteLine("❌ localhost:5005 hatası: " + response.StatusCode);
+                            Console.WriteLine("❌ " + url + " hatası: " + ex.Message);
                         }
                     }
-                    catch (Exception ex)
+                    
+                    if (!success)
                     {
-                        Console.WriteLine("❌ localhost:5005 hatası: " + ex.Message);
+                        Console.WriteLine("⚠️ Hiçbir backend'e sonuçlar gönderilemedi!");
                     }
                 }
             }
