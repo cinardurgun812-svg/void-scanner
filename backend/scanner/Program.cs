@@ -308,7 +308,8 @@ namespace VoidScanner
                 var json = JsonConvert.SerializeObject(scanResults);
                 var urls = new[]
                 {
-                    "https://void-scanner-api.onrender.com/api/scan-results"
+                    "https://void-scanner-api.onrender.com/api/scan-results",
+                    "http://localhost:5005/api/scan-results"
                 };
                 
                 // SSL sertifika doğrulamasını devre dışı bırak
