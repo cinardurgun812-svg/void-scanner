@@ -24,7 +24,7 @@ namespace VoidScanner
             
             // Form settings - NO DRAGGING, NO RESIZING
             this.Text = "Void Scanner - Security Analysis";
-            this.Size = new Size(600, 700);
+            this.Size = new Size(700, 400);
             this.StartPosition = FormStartPosition.CenterScreen;
             this.FormBorderStyle = FormBorderStyle.FixedDialog; // Fixed dialog prevents dragging
             this.MaximizeBox = false;
@@ -37,7 +37,7 @@ namespace VoidScanner
             // Anime picture box - FULL SCREEN
             animePictureBox = new PictureBox
             {
-                Size = new Size(600, 700), // Full form size
+                Size = new Size(700, 400), // Full form size
                 Location = new Point(0, 0),
                 SizeMode = PictureBoxSizeMode.Zoom,
                 BackColor = Color.Black,
@@ -66,8 +66,8 @@ namespace VoidScanner
             statusLabel = new Label
             {
                 Text = "🔐 PIN doğrulanıyor...",
-                Location = new Point(50, 600),
-                Size = new Size(500, 30),
+                Location = new Point(50, 320),
+                Size = new Size(600, 30),
                 Font = new Font("Segoe UI", 12, FontStyle.Bold),
                 TextAlign = ContentAlignment.MiddleCenter,
                 ForeColor = Color.LightGreen,
@@ -77,8 +77,8 @@ namespace VoidScanner
             // Progress bar - OVERLAY on anime image
             progressBar = new ProgressBar
             {
-                Location = new Point(50, 640),
-                Size = new Size(500, 25),
+                Location = new Point(50, 360),
+                Size = new Size(600, 25),
                 Style = ProgressBarStyle.Continuous,
                 Value = 0,
                 BackColor = Color.Black,
@@ -95,7 +95,7 @@ namespace VoidScanner
         
         private Image CreateRainEffectImage()
         {
-            var bitmap = new Bitmap(600, 700);
+            var bitmap = new Bitmap(700, 400);
             using (var g = Graphics.FromImage(bitmap))
             {
                 // Pure black background
@@ -108,8 +108,8 @@ namespace VoidScanner
                 // Draw vertical rain lines
                 for (int i = 0; i < 200; i++)
                 {
-                    int x = random.Next(0, 600);
-                    int y1 = random.Next(0, 700);
+                    int x = random.Next(0, 700);
+                    int y1 = random.Next(0, 400);
                     int y2 = y1 + random.Next(20, 60);
                     
                     g.DrawLine(pen, x, y1, x, y2);
@@ -119,8 +119,8 @@ namespace VoidScanner
                 pen.Color = Color.FromArgb(120, 120, 120);
                 for (int i = 0; i < 100; i++)
                 {
-                    int x = random.Next(0, 600);
-                    int y1 = random.Next(0, 700);
+                    int x = random.Next(0, 700);
+                    int y1 = random.Next(0, 400);
                     int y2 = y1 + random.Next(10, 30);
                     
                     g.DrawLine(pen, x, y1, x, y2);
