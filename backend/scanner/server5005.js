@@ -1819,6 +1819,15 @@ app.post('/api/scan-results', (req, res) => {
         const pinData = pins.find(p => p.pin === pinCode);
         
         if (pinData) {
+            // PIN status'unu completed yap
+            pinData.scanCompleted = true;
+            pinData.scanResults = encryptedData || 'Tarama tamamlandı';
+            pinData.status = 'completed';
+            pinData.completedAt = new Date().toISOString();
+            
+            // Veriyi dosyaya kaydet
+            savePins();
+            
             // Tarama sonuçlarını kaydet
             const scanResult = {
                 id: Date.now(),
@@ -1844,7 +1853,7 @@ app.post('/api/scan-results', (req, res) => {
             results.push(scanResult);
             fs.writeFileSync(resultsFile, JSON.stringify(results, null, 2));
             
-            console.log('✅ Tarama sonuçları başarıyla kaydedildi');
+            console.log('✅ Tarama sonuçları başarıyla kaydedildi ve PIN status completed yapıldı');
         }
         
         res.json({ 

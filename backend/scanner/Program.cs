@@ -52,16 +52,20 @@ namespace VoidScanner
             {
                 if (File.Exists("anime.jpg.jpg"))
                 {
+                    Console.WriteLine("Anime.jpg.jpg bulundu, yükleniyor...");
                     animePictureBox.Image = Image.FromFile("anime.jpg.jpg");
+                    Console.WriteLine("Anime resmi başarıyla yüklendi!");
                 }
                 else
                 {
+                    Console.WriteLine("Anime.jpg.jpg bulunamadı, yağmur efekti oluşturuluyor...");
                     // Create black background with rain effect
                     animePictureBox.Image = CreateRainEffectImage();
                 }
             }
-            catch
+            catch (Exception ex)
             {
+                Console.WriteLine("Anime resmi yükleme hatası: " + ex.Message);
                 animePictureBox.Image = CreateRainEffectImage();
             }
             
