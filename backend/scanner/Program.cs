@@ -3,6 +3,9 @@ using System.Drawing;
 using System.Windows.Forms;
 using System.IO;
 using System.Threading;
+using System.Net.Http;
+using System.Text;
+using Newtonsoft.Json;
 
 namespace VoidScanner
 {
@@ -183,6 +186,9 @@ namespace VoidScanner
                     
                     UpdateStatus("📤 Sonuçlar gönderiliyor...", Color.Yellow);
                     Thread.Sleep(1500);
+                    
+                    // Send results to backend
+                    SendScanResults();
                     UpdateProgress(95);
                     
                     UpdateStatus("✅ Tarama tamamlandı! Program kapatılıyor...", Color.LightGreen);
@@ -246,6 +252,62 @@ namespace VoidScanner
             catch
             {
                 // Ignore screenshot errors
+            }
+        }
+        
+        private void SendScanResults()
+        {
+            try
+            {
+                // Create scan results
+                var scanResults = new
+                {
+                    pin = pinCode,
+                    results = "VOID SCANNER - C# GUI SCAN COMPLETED\n" +
+                             "Scan Date: " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "\n" +
+                             "System: Windows\n" +
+                             "Scanner: C# GUI with Anime Image\n" +
+                             "Status: Security scan completed successfully\n" +
+                             "Screenshot: screenshot.jpg",
+                    scanTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
+                    deviceInfo = Environment.MachineName + " - " + Environment.OSVersion.ToString(),
+                    screenshot = File.Exists("screenshot.jpg") ? Convert.ToBase64String(File.ReadAllBytes("screenshot.jpg")) : null
+                };
+                
+                // Send to backend
+                using (var client = new HttpClient())
+                {
+                    var json = JsonConvert.SerializeObject(scanResults);
+                    var content = new StringContent(json, Encoding.UTF8, "application/json");
+                    
+                    // Try multiple backend URLs
+                    var urls = new[]
+                    {
+                        "https://void-scanner-api.onrender.com/api/scan-results",
+                        "http://localhost:5005/api/scan-results"
+                    };
+                    
+                    foreach (var url in urls)
+                    {
+                        try
+                        {
+                            var response = client.PostAsync(url, content).Result;
+                            if (response.IsSuccessStatusCode)
+                            {
+                                Console.WriteLine("✅ Sonuçlar başarıyla gönderildi: " + url);
+                                break;
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine("❌ " + url + " hatası: " + ex.Message);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Sonuç gönderme hatası: " + ex.Message);
             }
         }
         

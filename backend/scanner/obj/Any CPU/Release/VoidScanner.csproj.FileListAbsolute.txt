@@ -4,3 +4,4 @@ C:\Users\durgu\void-scanner\backend\scanner\obj\Any CPU\Release\VoidScanner.exe
 C:\Users\durgu\void-scanner\backend\scanner\bin\Release\anime.jpg.jpg
 C:\Users\durgu\void-scanner\backend\scanner\bin\Release\VoidScanner.pdb
 C:\Users\durgu\void-scanner\backend\scanner\obj\Any CPU\Release\VoidScanner.pdb
+C:\Users\durgu\void-scanner\backend\scanner\bin\Release\Newtonsoft.Json.dll
